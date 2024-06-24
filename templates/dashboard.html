@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Dashboard</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ total_projects }}</h3>
+                        <p>Projects</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>${{ total_income|floatformat:"2" }}</h3>
+                        <p>Income</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>${{ total_expenses|floatformat:"2" }}</h3>
+                        <p>Expenses</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>${{ total_balance|floatformat:"2" }}</h3>
+                        <p>Profit</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            {% for status, count in project_status_summary.items %}
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-light">
+                    <div class="inner">
+                        <h3>{{ count }}</h3>
+                        <p>{{ status }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form method="GET" class="mb-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="search" placeholder="Search by project name" value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-4">
+                    <select class="form-control" name="status">
+                        <option value="">Filter by status</option>
+                        {% for status in project_statuses %}
+                        <option value="{{ status.name }}" {% if request.GET.status == status.name %}selected{% endif %}>{{ status.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success">Filter</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Clear Filters</a>
+                </div>
+            </div>
+        </form>
+
+        <div class="row">
+            {% for project in projects %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="{% url 'project_detail' project.id %}">{{ project.name }}</a></h5>
+                        <p class="card-text"><strong>Status: </strong>{{ project.status }}</p>
+                        <p class="card-text"><strong>Total amount: </strong>${{ project.total_amount|floatformat:"2" }}</p>
+                        <p class="card-text"><strong>Total hours: </strong>{{ project.total_hours|floatformat:"2" }}</p>
+                        <p class="card-text"><strong>Total cost: </strong>${{ project.total_cost|add:project.total_expenses|floatformat:2 }}</p>
+                        <p class="card-text"><strong>Payment: </strong>${{ project.total_payment|floatformat:"2" }}</p>
+                        <p class="card-text"><strong>Profit: </strong>${{ project.remaining_balance|floatformat:"2" }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if projects %}
+            {% if not projects.has_other_pages %}
+                <div class="mt-4">
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-warning mt-4" role="alert">No projects found.</div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

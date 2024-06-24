@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <h2>Total Amount Details</h2>
+        <a href="{% url 'totalamountdetails_create' %}" class="btn btn-primary mb-2">Add Total Amount Detail</a>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Description of Work</th>
+                    <th>Scheduled Value</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detail in total_amount_details %}
+                    <tr>
+                        <td>{{ detail.project.name }}</td>
+                        <td>{{ detail.description_of_work }}</td>
+                        <td>{{ detail.scheduled_value }}</td>
+                        <td>
+                            <a href="{% url 'totalamountdetails_detail' detail.pk %}" class="btn btn-info">View</a>
+                            <a href="{% url 'totalamountdetails_update' detail.pk %}" class="btn btn-warning">Edit</a>
+                            <a href="{% url 'totalamountdetails_delete' detail.pk %}" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

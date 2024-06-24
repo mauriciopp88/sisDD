@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Project Overview</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Project Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>Name:</strong> {{ project.name }}</p>
+                        <p><strong>Status:</strong> {{ project.status }}</p>
+                        <p><strong>Description:</strong> {{ project.description }}</p>
+                        <p><strong>Drawings:</strong> <a href="{{ project.drawings }}" target="_blank">View or Download</a></p>
+                        <p><strong>Reports:</strong> <a href="{{ project.reports_p }}" target="_blank">View or Download</a></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Contact Name:</strong> {{ project.contact_name }}</p>
+                        <p><strong>Contact Phone:</strong> <a href="tel:{{ project.contact_phone }}">{{ project.contact_phone }}</a></p>
+                        <p><strong>Address:</strong> <a href="https://www.google.com/maps/search/?api=1&query={{ project.address }}" target="_blank">{{ project.address }}</a></p>
+                        <p><strong>Start Date:</strong> {{ project.start_date }}</p>
+                        <p><strong>End Date:</strong> {{ project.end_date }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Contract Amount:</strong> ${{ project.contract_amount|floatformat:"2" }}</p>
+                        <p><strong>Total Amount:</strong> ${{ project.total_amount|floatformat:"2" }}</p>
+                        <p><strong>Hours:</strong> {{ total_project_hours }}</p>
+                        <p><strong>Labor cost:</strong> ${{ total_cost|floatformat:"2" }}</p>
+                        <p><strong>Expenses:</strong> ${{ total_expenses|floatformat:"2" }}</p>
+                        <p><strong>Income:</strong> ${{ total_income|floatformat:"2" }}</p>
+                        <p><strong>Balance:</strong> ${{ balance|floatformat:"2" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Total Amount Details</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Description of Work</th>
+                            <th>Scheduled Value</th>
+                            <th>Payment</th>
+                            <th>Balance to Finish</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detail in total_amount_details %}
+                        <tr>
+                            <td>{{ detail.description_of_work }}</td>
+                            <td>${{ detail.scheduled_value|floatformat:"2" }}</td>
+                            <td>
+                                <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#paymentMODModal{{ detail.pk }}">
+                                    {{ detail.payment.count }}
+                                </button>
+                                ${{ detail.total_payment|floatformat:"2" }}
+                            </td>
+                            <td>${{ detail.balance_to_finish|floatformat:"2" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">Expenses</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Value</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for expense in project.expense_set.all %}
+                                <tr>
+                                    <td>{{ expense.date }}</td>
+                                    <td>${{ expense.value|floatformat:"2" }}</td>
+                                    <td>{{ expense.description }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="3"><strong>Total:</strong> ${{ project.total_expenses|floatformat:"2" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">Income</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Value</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for income in project.income_set.all %}
+                                <tr>
+                                    <td>{{ income.date }}</td>
+                                    <td>${{ income.value|floatformat:"2" }}</td>
+                                    <td>{{ income.description }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="3"><strong>Total:</strong> ${{ project.total_income|floatformat:"2" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Employee Work Records</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Total Hours</th>
+                            <th>Total Labor Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee, totals in employee_totals.items %}
+                        <tr>
+                            <td>{{ employee }}</td>
+                            <td>{{ totals.hours }}</td>
+                            <td>${{ totals.total_cost|floatformat:"2" }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td><strong>Total:</strong></td>
+                            <td><strong>{{ total_project_hours|floatformat:"2" }}</strong></td>
+                            <td><strong>${{ total_cost|floatformat:"2" }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modales -->
+{% for detail in total_amount_details %}
+<div class="modal fade" id="paymentMODModal{{ detail.pk }}" tabindex="-1" role="dialog" aria-labelledby="paymentMODModal{{ detail.pk }}Label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentMODModal{{ detail.pk }}Label">Payment Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Value</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for completed_detail in detail.payment.all %}
+                        <tr>
+                            <td>{{ completed_detail.date }}</td>
+                            <td>${{ completed_detail.value|floatformat:"2" }}</td>
+                            <td>{{ completed_detail.description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

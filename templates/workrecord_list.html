@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Work Record List</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Work Records</h3>
+                <div class="card-tools">
+                    <a href="{% url 'workrecord_create' %}" class="btn btn-primary btn-sm">Add Work Record</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="filter-form" class="row g-3">
+                    <div class="col-md-2">
+                        <label for="start-date" class="form-label">Start Date</label>
+                        <input type="date" id="start-date" name="start-date" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="end-date" class="form-label">End Date</label>
+                        <input type="date" id="end-date" name="end-date" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="project" class="form-label">Project</label>
+                        <select id="project" name="project" class="form-select">
+                            <option value="">All Projects</option>
+                            {% for project in projects %}
+                                <option value="{{ project.name }}">{{ project.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="employee" class="form-label">Employee</label>
+                        <select id="employee" name="employee" class="form-select">
+                            <option value="">All Employees</option>
+                            {% for employee in employees %}
+                                <option value="{{ employee.full_name }}">{{ employee.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="button" id="filter-button" class="btn btn-success">Filter</button>
+                        <button type="button" id="reset-button" class="btn btn-secondary">Reset</button>
+                    </div>
+                </form>
+
+                <table id="workrecord-table" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Project</th>
+                            <th>Date</th>
+                            <th>Hours</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for workrecord in workrecords %}
+                        <tr>
+                            <td>{{ workrecord.employee }}</td>
+                            <td>{{ workrecord.project }}</td>
+                            <td>{{ workrecord.date }}</td>
+                            <td>{{ workrecord.hours }}</td>
+                            <td>
+                                <a href="{% url 'workrecord_update' workrecord.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{% url 'workrecord_delete' workrecord.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        console.log("Document is ready");
+
+        var table = $('#workrecord-table').DataTable({
+            "paging": true,
+            "ordering": true,
+            "searching": true,
+        });
+
+        $('#filter-button').on('click', function() {
+            console.log("Filter button clicked");
+            var projectId = $('#project').val();
+            var employeeId = $('#employee').val();
+            var startDate = $('#start-date').val();
+            var endDate = $('#end-date').val();
+
+            table.columns().search('');
+
+            if (projectId) {
+                table.column(1).search(projectId).draw();
+            }
+
+            if (employeeId) {
+                table.column(0).search(employeeId).draw();
+            }
+
+            if (startDate && endDate) {
+                table.column(2).search(function (value, index, array) {
+                    var date = new Date(value);
+                    var start = new Date(startDate);
+                    var end = new Date(endDate);
+                    return start <= date && date <= end.setDate(end.getDate() + 1);
+                }).draw();
+            }
+        });
+
+        $('#reset-button').on('click', function() {
+            console.log("Reset button clicked");
+            $('#filter-form')[0].reset();
+            table.columns().search('').draw();
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

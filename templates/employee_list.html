@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Employee List</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Employees</h3>
+                <div class="card-tools">
+                    <a href="{% url 'employee_create' %}" class="btn btn-primary btn-sm">Add Employee</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Birth Date</th>
+                            <th>Contact Number</th>
+                            <th>Hire Date</th>
+                            <th>Hourly Rate</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in employees %}
+                        <tr>
+                            <td>{{ employee.full_name }}</td>
+                            <td>{{ employee.birth_date }}</td>
+                            <td>{{ employee.contact_number }}</td>
+                            <td>{{ employee.hire_date }}</td>
+                            <td>{{ employee.hourly_rate }}</td>
+                            <td>{{ employee.status }}</td>
+                            <td>
+                                <a href="{% url 'employee_update' employee.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{% url 'employee_delete' employee.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

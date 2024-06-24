@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Update Project</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Project Details</h3>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="card-body">
+                    {{ form.as_p }}
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

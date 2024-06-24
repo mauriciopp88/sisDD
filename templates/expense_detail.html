@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Expense Details</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">Details</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Date:</strong> {{ object.date }}</p>
+                <p><strong>Value:</strong> {{ object.value }}</p>
+                <p><strong>Description:</strong> {{ object.description }}</p>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'expense_update' object.pk %}" class="btn btn-primary">Edit</a>
+                <a href="{% url 'expense_delete' object.pk %}" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
