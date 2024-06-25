@@ -54,6 +54,4 @@ class PaymentDetailsForm(forms.ModelForm):
     class Meta:
         model = PaymentDetails
         fields = '__all__'
-        widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
-        }
+
