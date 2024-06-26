@@ -51,7 +51,7 @@
                 <h5 class="card-title">Total Amount Details</h5>
             </div>
             <div class="card-body">
-                <table class="table table-bordered table-hover">
+                <table id="totalAmountDetailsTable" class="table table-bordered table-hover">
                     <thead>
                         <tr>
                             <th>Description of Work</th>
@@ -86,7 +86,7 @@
                         <h5 class="card-title">Expenses</h5>
                     </div>
                     <div class="card-body">
-                        <table class="table table-bordered table-hover">
+                        <table id="expensesTable" class="table table-bordered table-hover">
                             <thead>
                                 <tr>
                                     <th>Date</th>
@@ -116,7 +116,7 @@
                         <h5 class="card-title">Income</h5>
                     </div>
                     <div class="card-body">
-                        <table class="table table-bordered table-hover">
+                        <table id="incomeTable" class="table table-bordered table-hover">
                             <thead>
                                 <tr>
                                     <th>Date</th>
@@ -147,7 +147,7 @@
                 <h5 class="card-title">Employee Work Records</h5>
             </div>
             <div class="card-body">
-                <table class="table table-bordered table-hover">
+                <table id="workRecordsTable" class="table table-bordered table-hover">
                     <thead>
                         <tr>
                             <th>Employee</th>
@@ -210,4 +210,30 @@
     </div>
 </div>
 {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        $('#totalAmountDetailsTable').DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print"]
+        }).buttons().container().appendTo('#totalAmountDetailsTable_wrapper .col-md-6:eq(0)');
+        
+        $('#expensesTable').DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print"]
+        }).buttons().container().appendTo('#expensesTable_wrapper .col-md-6:eq(0)');
+        
+        $('#incomeTable').DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print"]
+        }).buttons().container().appendTo('#incomeTable_wrapper .col-md-6:eq(0)');
+        
+        $('#workRecordsTable').DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print"]
+        }).buttons().container().appendTo('#workRecordsTable_wrapper .col-md-6:eq(0)');
+    });
+</script>
 {% endblock %}
