@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Sum
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 
@@ -59,7 +59,6 @@ class Project(models.Model):
         return self.total_income() - self.total_cost()
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
         self.total_amount = self.calculate_total_amount()
         super().save(*args, **kwargs)
 
@@ -151,7 +150,7 @@ class WorkRecord(models.Model):
         verbose_name_plural = "Work Records"
 
     def __str__(self):
-        return f"{self.employee.full_name} - {self.hours} hours"
+        return f"{self.employee.full_name} - {self.hours} horas"
 
 
 class TotalAmountDetails(models.Model):
@@ -173,14 +172,14 @@ class TotalAmountDetails(models.Model):
         return self.payment.aggregate(total=Sum('value'))['total'] or 0
 
     def calculate_balance_to_finish(self):
-        total_completed = self.payment.aggregate(total=Sum('value'))['total'] or 0
+        total_completed = self.total_payment()
         return self.scheduled_value - total_completed
 
     def save(self, *args, **kwargs):
+        self.balance_to_finish = self.calculate_balance_to_finish()
         super().save(*args, **kwargs)
         project = self.project
         project.total_amount = project.calculate_total_amount()
-        self.balance_to_finish = self.calculate_balance_to_finish()
         project.save()
 
 

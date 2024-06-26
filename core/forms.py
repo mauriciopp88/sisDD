@@ -16,12 +16,22 @@ class ExpenseForm(forms.ModelForm):
     class Meta:
         model = Expense
         fields = '__all__'
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'value': forms.NumberInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+        }
 
 
 class IncomeForm(forms.ModelForm):
     class Meta:
         model = Income
         fields = '__all__'
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'value': forms.NumberInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+        }
 
 
 class EmployeeForm(forms.ModelForm):
@@ -42,16 +52,29 @@ class WorkRecordForm(forms.ModelForm):
     class Meta:
         model = WorkRecord
         fields = '__all__'
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'hours': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
 
 
 class TotalAmountDetailsForm(forms.ModelForm):
     class Meta:
         model = TotalAmountDetails
         exclude = ['balance_to_finish']
+        widgets = {
+            'description_of_work': forms.TextInput(attrs={'class': 'form-control'}),
+            'scheduled_value': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
 
 
 class PaymentDetailsForm(forms.ModelForm):
     class Meta:
         model = PaymentDetails
         fields = '__all__'
-
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'value': forms.NumberInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+        }

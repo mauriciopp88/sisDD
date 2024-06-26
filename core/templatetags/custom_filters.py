@@ -1,11 +1,26 @@
 from django import template
+import locale
 
 register = template.Library()
 
 
+@register.filter(name='currency')
+def currency(value):
+    try:
+        locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+    except locale.Error:
+        locale.setlocale(locale.LC_ALL, 'C')
+
+    try:
+        value = float(value)
+    except (ValueError, TypeError):
+        return value  # Devuelve el valor sin formatear si no se puede convertir a float
+
+    return locale.format_string("%0.2f", value, grouping=True)
+
+
 @register.filter(name='add_class')
 def add_class(value, arg):
-    """Agrega una clase CSS a un campo de formulario."""
     css_classes = value.field.widget.attrs.get('class', '')
     if css_classes:
         css_classes += f' {arg}'
@@ -17,7 +32,6 @@ def add_class(value, arg):
 
 @register.filter(name='add_attr')
 def add_attr(value, arg):
-    """Agrega un atributo adicional a un campo de formulario."""
     key, val = arg.split(":")
     value.field.widget.attrs[key] = val
     return value

@@ -55,28 +55,21 @@ def dashboard(request):
     projects = Project.objects.all()
     project_statuses = ProjectStatus.objects.all()
 
-    # Obtener el valor de búsqueda del cuadro de texto
     search_query = request.GET.get('search', None)
-
-    # Obtener el valor del estado seleccionado
     status_filter = request.GET.get('status', None)
 
-    # Filtrar proyectos por nombre si se proporciona una consulta de búsqueda
     if search_query:
         projects = projects.filter(name__icontains=search_query)
 
-    # Filtrar proyectos por estado si se selecciona uno
     if status_filter:
         projects = projects.filter(status__name=status_filter)
 
-    # Calcular métricas generales
     total_projects = projects.count()
-    total_income = Income.objects.aggregate(total=Sum('value'))['total'] or 0
-    total_expenses = Expense.objects.aggregate(total=Sum('value'))['total'] or 0
+    total_income = Income.objects.aggregate(total=Sum('value'))['total'] or 0.0
+    total_expenses = Expense.objects.aggregate(total=Sum('value'))['total'] or 0.0
     total_balance = total_income - total_expenses
-    total_total_amount = projects.aggregate(total=Sum('total_amount'))['total'] or 0
+    total_total_amount = projects.aggregate(total=Sum('total_amount'))['total'] or 0.0
 
-    # Calcular proyectos por estado
     project_status_summary = {
         status.name: projects.filter(status=status).count()
         for status in project_statuses
