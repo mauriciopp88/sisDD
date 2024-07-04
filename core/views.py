@@ -2,11 +2,43 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.db.models import Sum
+import datetime
+from django.utils import timezone
 
-from .forms import IncomeForm, ExpenseForm, EmployeeForm, WorkRecordForm, ProjectForm, PaymentDetailsForm, \
-    TotalAmountDetailsForm
-from .models import Project, WorkRecord, ProjectStatus, Expense, Income, Employee, TotalAmountDetails, \
-    PaymentDetails
+from .forms import ExpenseForm, EmployeeForm, WorkRecordForm, ProjectForm, PaymentDetailsForm, TotalAmountDetailsForm
+from .models import Project, WorkRecord, ProjectStatus, Expense, Employee, TotalAmountDetails, PaymentDetails
+
+
+def get_previous_week_range():
+    today = timezone.now().date()
+    start_of_week = today - datetime.timedelta(days=today.weekday() + 7)
+    end_of_week = start_of_week + datetime.timedelta(days=6)
+    return start_of_week, end_of_week
+
+def employee_weekly_hours_report(request):
+    start_date, end_date = get_previous_week_range()
+
+    if request.GET.get('week'):
+        try:
+            start_date_str, end_date_str = request.GET.get('week').split('|')
+            start_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            week_offset = int(request.GET.get('week'))
+            start_date += datetime.timedelta(weeks=week_offset)
+            end_date += datetime.timedelta(weeks=week_offset)
+
+    work_records = WorkRecord.objects.filter(date__range=[start_date, end_date])
+    employee_hours = work_records.values('employee__full_name').annotate(total_hours=Sum('hours')).order_by('employee__full_name')
+
+    context = {
+        'start_date': start_date,
+        'end_date': end_date,
+        'employee_hours': employee_hours,
+        'week_offset': request.GET.get('week', 0)
+    }
+
+    return render(request, 'employee_weekly_hours_report.html', context)
 
 
 def project_detail_dash(request, project_id):
@@ -33,11 +65,11 @@ def project_detail_dash(request, project_id):
     # Calculamos el total de gastos
     total_expenses = project.total_expenses()
 
-    # Calculamos el total de ingresos
-    total_income = project.total_income()
+    # # Calculamos el total de ingresos
+    # total_income = project.total_income()
 
-    # Calculamos el balance
-    balance = project.total_amount - total_income
+    # # Calculamos el balance
+    # balance = project.total_amount - total_income
 
     return render(request, 'project_detail_dash.html', {
         'project': project,
@@ -45,8 +77,8 @@ def project_detail_dash(request, project_id):
         'employee_totals': employee_totals,
         'total_cost': total_cost,
         'total_expenses': total_expenses,
-        'total_income': total_income,
-        'balance': balance,
+        # 'total_income': total_income,
+        # 'balance': balance,
         'total_project_hours': total_project_hours
     })
 
@@ -65,10 +97,10 @@ def dashboard(request):
         projects = projects.filter(status__name=status_filter)
 
     total_projects = projects.count()
-    total_income = Income.objects.aggregate(total=Sum('value'))['total'] or 0.0
+    total_payment_paid = sum(project.total_payment_paid() for project in projects)
+    total_payment_sent = sum(project.total_payment_sent() for project in projects)
     total_expenses = Expense.objects.aggregate(total=Sum('value'))['total'] or 0.0
-    total_balance = total_income - total_expenses
-    total_total_amount = projects.aggregate(total=Sum('total_amount'))['total'] or 0.0
+    total_balance = total_payment_paid - total_expenses
 
     project_status_summary = {
         status.name: projects.filter(status=status).count()
@@ -79,10 +111,10 @@ def dashboard(request):
         'projects': projects,
         'project_statuses': project_statuses,
         'total_projects': total_projects,
-        'total_income': total_income,
+        'total_payment_paid': total_payment_paid,
+        'total_payment_sent': total_payment_sent,
         'total_expenses': total_expenses,
         'total_balance': total_balance,
-        'total_total_amount': total_total_amount,
         'project_status_summary': project_status_summary,
     }
 
@@ -151,29 +183,27 @@ class ExpenseDeleteView(DeleteView):
     success_url = reverse_lazy('dashboard')
 
 
-class IncomeListView(ListView):
-    model = Income
-    template_name = 'income_list.html'
-    context_object_name = 'incomes'
+# class IncomeListView(ListView):
+#     model = Income
+#     template_name = 'income_list.html'
+#     context_object_name = 'incomes'
+
+# class IncomeCreate(CreateView):
+#     model = Income
+#     form_class = IncomeForm
+#     template_name = 'income_form.html'
+#     success_url = reverse_lazy('income_list')
 
 
-class IncomeCreate(CreateView):
-    model = Income
-    form_class = IncomeForm
-    template_name = 'income_form.html'
-    success_url = reverse_lazy('income_list')
+# class IncomeUpdate(UpdateView):
+#     model = Income
+#     form_class = IncomeForm
+#     template_name = 'income_form.html'
+#     success_url = reverse_lazy('income_list')
 
-
-class IncomeUpdate(UpdateView):
-    model = Income
-    form_class = IncomeForm
-    template_name = 'income_form.html'
-    success_url = reverse_lazy('income_list')
-
-
-class IncomeDelete(DeleteView):
-    model = Income
-    success_url = reverse_lazy('income_list')
+# class IncomeDelete(DeleteView):
+#     model = Income
+#     success_url = reverse_lazy('income_list')
 
 
 class EmployeeListView(ListView):

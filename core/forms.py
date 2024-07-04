@@ -1,6 +1,8 @@
 from django import forms
-from .models import Project, Expense, Income, Employee, WorkRecord, TotalAmountDetails, PaymentDetails
+from .models import Project, Expense, Employee, WorkRecord, TotalAmountDetails, PaymentDetails
 
+
+# Income
 
 class ProjectForm(forms.ModelForm):
     class Meta:
@@ -23,15 +25,15 @@ class ExpenseForm(forms.ModelForm):
         }
 
 
-class IncomeForm(forms.ModelForm):
-    class Meta:
-        model = Income
-        fields = '__all__'
-        widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'value': forms.NumberInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control'}),
-        }
+# class IncomeForm(forms.ModelForm):
+#     class Meta:
+#         model = Income
+#         fields = '__all__'
+#         widgets = {
+#             'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+#             'value': forms.NumberInput(attrs={'class': 'form-control'}),
+#             'description': forms.Textarea(attrs={'class': 'form-control'}),
+#         }
 
 
 class EmployeeForm(forms.ModelForm):
@@ -78,3 +80,4 @@ class PaymentDetailsForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
         }
+

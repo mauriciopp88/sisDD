@@ -15,28 +15,28 @@
 <section class="content">
     <div class="container-fluid">
         <div class="row">
-            <!-- Caja de Proyectos -->
+            <!-- Caja de Payment Paid -->
             <div class="col-lg-3 col-6">
-                <div class="small-box bg-info">
+                <div class="small-box bg-success">
                     <div class="inner">
-                        <h3>{{ total_projects }}</h3>
-                        <p>Projects</p>
+                        <h3>${{ total_payment_paid|currency }}</h3>
+                        <p>Payment Paid</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-project-diagram"></i>
+                        <i class="fas fa-dollar-sign"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- Caja de Ingresos -->
+            <!-- Caja de Payment Sent -->
             <div class="col-lg-3 col-6">
-                <div class="small-box bg-success">
+                <div class="small-box bg-info">
                     <div class="inner">
-                        <h3>${{ total_income|currency }}</h3>
-                        <p>Income</p>
+                        <h3>${{ total_payment_sent|currency }}</h3>
+                        <p>Payment Sent</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-dollar-sign"></i>
+                        <i class="fas fa-paper-plane"></i>
                     </div>
                 </div>
             </div>
@@ -70,15 +70,28 @@
 
         <!-- Resumen por estado del proyecto -->
         <div class="row">
-            {% for status, count in project_status_summary.items %}
+            <!-- Caja de Proyectos -->
             <div class="col-lg-3 col-6">
-                <div class="small-box bg-light">
+                <div class="small-box bg-gradient-blue">
                     <div class="inner">
-                        <h3>{{ count }}</h3>
-                        <p>{{ status }}</p>
+                        <h3>{{ total_projects }}</h3>
+                        <p>Projects</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-project-diagram"></i>
                     </div>
                 </div>
             </div>
+
+            {% for status, count in project_status_summary.items %}
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-light">
+                        <div class="inner">
+                            <h3>{{ count }}</h3>
+                            <p>{{ status }}</p>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
         </div>
 
@@ -92,7 +105,7 @@
                     <select class="form-control" name="status">
                         <option value="">Filter by status</option>
                         {% for status in project_statuses %}
-                        <option value="{{ status.name }}" {% if request.GET.status == status.name %}selected{% endif %}>{{ status.name }}</option>
+                            <option value="{{ status.name }}" {% if request.GET.status == status.name %}selected{% endif %}>{{ status.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -106,23 +119,24 @@
         <!-- Tarjetas de proyectos -->
         <div class="row">
             {% for project in projects %}
-            <div class="col-md-4">
-                <div class="card shadow-sm mb-4">
-                    <div class="bg-info text-white p-2">
-                        <h5 class="card-title m-0">
-                            <a href="{% url 'project_detail' project.id %}" class="text-decoration-none text-white">{{ project.name }}</a>
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text"><strong><i class="fas fa-info-circle"></i> Status: </strong>{{ project.status }}</p>
-                        <p class="card-text"><strong><i class="fas fa-dollar-sign"></i> Total amount: </strong>${{ project.total_amount|currency }}</p>
-                        <p class="card-text"><strong><i class="fas fa-clock"></i> Total hours: </strong>{{ project.total_hours|floatformat:"2" }}</p>
-                        <p class="card-text"><strong><i class="fas fa-coins"></i> Total cost: </strong>${{ project.total_cost|add:project.total_expenses|currency }}</p>
-                        <p class="card-text"><strong><i class="fas fa-credit-card"></i> Payment: </strong>${{ project.total_payment|currency }}</p>
-                        <p class="card-text"><strong><i class="fas fa-piggy-bank"></i> Profit: </strong>${{ project.remaining_balance|currency }}</p>
+                <div class="col-md-4">
+                    <div class="card shadow-sm mb-4">
+                        <div class="bg-info text-white p-2">
+                            <h5 class="card-title m-0">
+                                <a href="{% url 'project_detail' project.id %}" class="text-decoration-none text-white">{{ project.name }}</a>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text"><strong><i class="fas fa-info-circle"></i> Status: </strong>{{ project.status }}</p>
+                            <p class="card-text"><strong><i class="fas fa-dollar-sign"></i> Total amount: </strong>${{ project.total_amount|currency }}</p>
+                            <p class="card-text"><strong><i class="fas fa-clock"></i> Total hours: </strong>{{ project.total_hours|floatformat:"2" }}</p>
+                            <p class="card-text"><strong><i class="fas fa-coins"></i> Total cost: </strong>${{ project.total_cost|add:project.total_expenses|currency }}</p>
+                            <p class="card-text"><strong><i class="fas fa-credit-card"></i> Payment Paid: </strong>${{ project.total_payment_paid|currency }}</p>
+                            <p class="card-text"><strong><i class="fas fa-credit-card"></i> Payment Sent: </strong>${{ project.total_payment_sent|currency }}</p>
+                            <p class="card-text"><strong><i class="fas fa-piggy-bank"></i> Profit: </strong>${{ project.remaining_balance|currency }}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
             {% endfor %}
         </div>
 

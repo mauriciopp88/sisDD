@@ -43,9 +43,6 @@ class Project(models.Model):
     def total_expenses(self):
         return self.expense_set.aggregate(total=Sum('value'))['total'] or 0
 
-    def total_income(self):
-        return self.income_set.aggregate(total=Sum('value'))['total'] or 0
-
     def total_hours(self):
         return self.workrecord_set.aggregate(total=Sum('hours'))['total'] or 0
 
@@ -55,23 +52,36 @@ class Project(models.Model):
             [work_record.hours * work_record.employee.hourly_rate for work_record in self.workrecord_set.all()])
         return total_expenses + total_employee_costs
 
+    def total_payment_paid(self):
+        return PaymentDetails.objects.filter(total_amount_detail__project=self, status='Paid').aggregate(total=Sum('value'))['total'] or 0
+
+    def total_payment_sent(self):
+        return PaymentDetails.objects.filter(total_amount_detail__project=self, status='Sent').aggregate(total=Sum('value'))['total'] or 0
+
     def remaining_balance(self):
-        return self.total_income() - self.total_cost()
+        return self.total_payment_paid() - self.total_expenses() - self.total_cost()
 
     def save(self, *args, **kwargs):
         self.total_amount = self.calculate_total_amount()
         super().save(*args, **kwargs)
 
+    def total_payment_paid(self):
+        return PaymentDetails.objects.filter(total_amount_detail__project=self, status='Paid').aggregate(total=Sum('value'))['total'] or 0
 
-class IncomeType(models.Model):
-    description = models.CharField(max_length=200, verbose_name="Description")
+    def total_payment_sent(self):
+        return PaymentDetails.objects.filter(total_amount_detail__project=self, status='Sent').aggregate(total=Sum('value'))['total'] or 0
 
-    class Meta:
-        verbose_name = "Income Type"
-        verbose_name_plural = "Income Types"
 
-    def __str__(self):
-        return self.description
+
+# class IncomeType(models.Model):
+#     description = models.CharField(max_length=200, verbose_name="Description")
+#
+#     class Meta:
+#         verbose_name = "Income Type"
+#         verbose_name_plural = "Income Types"
+#
+#     def __str__(self):
+#         return self.description
 
 
 class ExpenseType(models.Model):
@@ -85,19 +95,19 @@ class ExpenseType(models.Model):
         return self.description
 
 
-class Income(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name="Project")
-    income_type = models.ForeignKey(IncomeType, on_delete=models.CASCADE, verbose_name="Income Type")
-    date = models.DateField(verbose_name="Date")
-    value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Value")
-    description = models.TextField(verbose_name="Description")
-
-    class Meta:
-        verbose_name = "Income"
-        verbose_name_plural = "Incomes"
-
-    def __str__(self):
-        return f"{self.value} - {self.description}"
+# class Income(models.Model):
+#     project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name="Project")
+#     income_type = models.ForeignKey(IncomeType, on_delete=models.CASCADE, verbose_name="Income Type")
+#     date = models.DateField(verbose_name="Date")
+#     value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Value")
+#     description = models.TextField(verbose_name="Description")
+#
+#     class Meta:
+#         verbose_name = "Income"
+#         verbose_name_plural = "Incomes"
+#
+#     def __str__(self):
+#         return f"{self.value} - {self.description}"
 
 
 class Expense(models.Model):

@@ -14,115 +14,136 @@
     <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
     <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+    <!-- jQuery UI CSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
-    <div class="wrapper">
+<div class="wrapper">
 
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-                </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-                </li>
-            </ul>
-        </nav>
-        <!-- /.navbar -->
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- /.navbar -->
 
-        <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="{% url 'dashboard' %}" class="brand-link">
-                <span class="brand-text font-weight-light">D&D LLC.</span>
-            </a>
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a href="{% url 'dashboard' %}" class="brand-link">
+            <span class="brand-text font-weight-light">D&D LLC.</span>
+        </a>
 
-            <div class="sidebar">
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item">
-                            <a href="{% url 'project_list' %}" class="nav-link">
-                                <i class="nav-icon fas fa-project-diagram"></i>
-                                <p>Projects</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'income_list' %}" class="nav-link">
-                                <i class="nav-icon fas fa-dollar-sign"></i>
-                                <p>Income</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'expense_list' %}" class="nav-link">
-                                <i class="nav-icon fas fa-money-bill-wave"></i>
-                                <p>Expenses</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'workrecord_list' %}" class="nav-link">
-                                <i class="nav-icon fas fa-clock"></i>
-                                <p>Work Records</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'employee_list' %}" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Employees</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'totalamountdetails_list' %}" class="nav-link">
-                                <i class="nav-icon fas fa-file-invoice-dollar"></i>
-                                <p>Total Amount Details</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'paymentdetails_list' %}" class="nav-link">
-                                <i class="nav-icon fas fa-receipt"></i>
-                                <p>Payment Details</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
-
-        <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
-            <!-- Main content -->
-            <div class="content">
-                <div class="container-fluid">
-                    {% block content %}{% endblock %}
-                </div>
-            </div>
-            <!-- /.content -->
+        <div class="sidebar">
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <li class="nav-item">
+                        <a href="{% url 'project_list' %}" class="nav-link">
+                            <i class="nav-icon fas fa-project-diagram"></i>
+                            <p>Projects</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'expense_list' %}" class="nav-link">
+                            <i class="nav-icon fas fa-money-bill-wave"></i>
+                            <p>Expenses</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'workrecord_list' %}" class="nav-link">
+                            <i class="nav-icon fas fa-clock"></i>
+                            <p>Work Records</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'employee_list' %}" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Employees</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'employee_weekly_hours_report' %}" class="nav-link">
+                            <i class="nav-icon fas fa-clock"></i>
+                            <p>Weekly Hours Report</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'totalamountdetails_list' %}" class="nav-link">
+                            <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                            <p>Total Amount Details</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'paymentdetails_list' %}" class="nav-link">
+                            <i class="nav-icon fas fa-receipt"></i>
+                            <p>Payment Details</p>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
-        <!-- /.content-wrapper -->
+    </aside>
 
-        <!-- Main Footer -->
-        <footer class="main-footer">
-            <strong>&copy; 2024 IDEALISTA DIGITAL. Todos los derechos reservados.</strong>
-        </footer>
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Main content -->
+        <div class="content">
+            <div class="container-fluid">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+        <!-- /.content -->
     </div>
+    <!-- /.content-wrapper -->
 
-    <!-- Scripts -->
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
-    <script src="{% static 'dist/js/adminlte.js' %}"></script>
-    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
-    <script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
-    <script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
-    <script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <strong>&copy; 2024 IDEALISTA DIGITAL. All rights reserved.</strong>
+    </footer>
+</div>
 
-    {% block scripts %}{% endblock %}
+<!-- Scripts -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+<script src="{% static 'dist/js/adminlte.js' %}"></script>
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<!-- jQuery UI -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Inicialización de todas las tablas con la clase dataTable
+        $('table.dataTable').each(function() {
+            var table = $(this).DataTable({
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print"]
+            });
+
+            table.buttons().container().appendTo($(this).closest('.dataTables_wrapper').find('.col-md-6:eq(0)'));
+        });
+    });
+</script>
+{% endblock %}
 </body>
 </html>

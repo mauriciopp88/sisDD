@@ -21,16 +21,19 @@ urlpatterns = [
     path('expense/<int:pk>/delete/', views.ExpenseDeleteView.as_view(), name='expense_delete'),
 
     # Income URLs
-    path('income/', views.IncomeListView.as_view(), name='income_list'),
-    path('income/add/', views.IncomeCreate.as_view(), name='income_create'),
-    path('income/<int:pk>/', views.IncomeUpdate.as_view(), name='income_update'),
-    path('income/<int:pk>/delete/', views.IncomeDelete.as_view(), name='income_delete'),
+    # path('income/', views.IncomeListView.as_view(), name='income_list'),
+    # path('income/add/', views.IncomeCreate.as_view(), name='income_create'),
+    # path('income/<int:pk>/', views.IncomeUpdate.as_view(), name='income_update'),
+    # path('income/<int:pk>/delete/', views.IncomeDelete.as_view(), name='income_delete'),
 
     # Employee URLs
     path('employee/', views.EmployeeListView.as_view(), name='employee_list'),
     path('employee/create/', views.EmployeeCreate.as_view(), name='employee_create'),
     path('employee/<int:pk>/update/', views.EmployeeUpdate.as_view(), name='employee_update'),
     path('employee/<int:pk>/delete/', views.EmployeeDelete.as_view(), name='employee_delete'),
+
+    # Hours report
+    path('employee/weekly_hours_report/', views.employee_weekly_hours_report, name='employee_weekly_hours_report'),
 
     # WorkRecord URLs
     path('workrecord/', views.WorkRecordListView.as_view(), name='workrecord_list'),
