@@ -1,33 +1,35 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container">
-    <h2>Payment Details LIST</h2>
-    <a href="{% url 'paymentdetails_create' %}" class="btn btn-primary mb-2">Add Payment Detail</a>
-    <table class="table table-bordered table-striped dataTable">
-        <thead>
+    <div class="container">
+        <h2>Payment Details List</h2>
+        <a href="{% url 'paymentdetails_create' %}" class="btn btn-primary mb-2">Add Payment Detail</a>
+        <table class="table table-bordered table-striped dataTable">
+            <thead>
             <tr>
+                <th>Date</th>
                 <th>Project</th>
                 <th>Payment</th>
-                <th>Material Stored</th>
-                <th>Total Completed Stored</th>
+                <th>Description</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             {% for detail in payment_details %}
-            <tr>
-                <td>{{ detail.project.name }}</td>
-                <td>{{ detail.payment }}</td>
-                <td>{{ detail.material_stored }}</td>
-                <td>{{ detail.total_completed_stored }}</td>
-                <td>
-                    <a href="{% url 'paymentdetails_detail' detail.pk %}" class="btn btn-info">View</a>
-                    <a href="{% url 'paymentdetails_update' detail.pk %}" class="btn btn-warning">Edit</a>
-                    <a href="{% url 'paymentdetails_delete' detail.pk %}" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
+                <tr>
+                    <td>{{ detail.date }}</td>
+                    <td>{{ detail.total_amount_detail.project.name }}</td>
+                    <td>{{ detail.value }}</td>
+                    <td>{{ detail.description }}</td>
+                    <td>{{ detail.status }}</td>
+                    <td>
+                        <a href="{% url 'paymentdetails_detail' detail.pk %}" class="btn btn-info">View</a>
+                        <a href="{% url 'paymentdetails_update' detail.pk %}" class="btn btn-warning">Edit</a>
+                        <a href="{% url 'paymentdetails_delete' detail.pk %}" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
             {% endfor %}
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

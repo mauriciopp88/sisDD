@@ -31,8 +31,12 @@
                 <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
             </li>
         </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
     </nav>
-    <!-- /.navbar -->
 
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -129,21 +133,21 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 {% block scripts %}
-<script>
-    $(document).ready(function() {
-        // Inicialización de todas las tablas con la clase dataTable
-        $('table.dataTable').each(function() {
-            var table = $(this).DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print"]
-            });
+    <script>
+        $(document).ready(function() {
+            // Inicialización de todas las tablas con la clase dataTable
+            $('table.dataTable').each(function() {
+                var table = $(this).DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "buttons": ["copy", "csv", "excel", "pdf", "print"]
+                });
 
-            table.buttons().container().appendTo($(this).closest('.dataTables_wrapper').find('.col-md-6:eq(0)'));
+                table.buttons().container().appendTo($(this).closest('.dataTables_wrapper').find('.col-md-6:eq(0)'));
+            });
         });
-    });
-</script>
+    </script>
 {% endblock %}
 </body>
 </html>
