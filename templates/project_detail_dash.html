@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <div class="content-header">
     <div class="container-fluid">
@@ -52,6 +51,8 @@
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="card-title">Total Amount Details</h5>
+                <button type="button" class="btn btn-primary float-right ml-2" data-toggle="modal" data-target="#addTotalAmountDetailModal">Add Total Amount Detail</button>
+                <button type="button" class="btn btn-secondary float-right" data-toggle="modal" data-target="#addPaymentDetailModal">Add Payment Detail</button>
             </div>
             <div class="card-body">
                 <table id="total-amount-details-table" class="table table-bordered table-hover dataTable">
@@ -151,7 +152,52 @@
     </div>
 </section>
 
-<!-- Modales -->
+<!-- Modal para agregar Total Amount Details -->
+<div class="modal fade" id="addTotalAmountDetailModal" tabindex="-1" role="dialog" aria-labelledby="addTotalAmountDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTotalAmountDetailModalLabel">Add Total Amount Detail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="totalAmountDetailForm" method="post" action="{% url 'add_total_amount_detail' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="project" value="{{ project.id }}">
+                    {{ total_amount_detail_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    
+<!-- Modal para agregar Payment Details -->
+<div class="modal fade" id="addPaymentDetailModal" tabindex="-1" role="dialog" aria-labelledby="addPaymentDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPaymentDetailModalLabel">Add Payment Detail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="paymentDetailForm" method="post" action="{% url 'add_payment_detail' %}">
+                    {% csrf_token %}
+                    {{ payment_detail_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modales para Payment Details individuales -->
 {% for detail in total_amount_details %}
 <div class="modal fade" id="paymentMODModal{{ detail.pk }}" tabindex="-1" role="dialog" aria-labelledby="paymentMODModal{{ detail.pk }}Label" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -189,9 +235,59 @@
                     {% endfor %}
                     </tbody>
                 </table>
+{#                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPaymentDetailModal">Add Payment Detail</button>#}
             </div>
         </div>
     </div>
 </div>
 {% endfor %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function(){
+    $("#totalAmountDetailForm").on("submit", function(e){
+        e.preventDefault();
+        var form = $(this);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: form.serialize(),
+            success: function(response){
+                if(response.status === 'success'){
+                    alert('Total amount detail added successfully');
+                    location.reload(); // Recarga la página para ver los cambios
+                } else {
+                    alert('Error adding total amount detail: ' + JSON.stringify(response.errors));
+                }
+            },
+            error: function(response) {
+                alert('Server error: ' + response.statusText);
+            }
+        });
+    });
+
+    $("#paymentDetailForm").on("submit", function(e){
+        e.preventDefault();
+        var form = $(this);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: form.serialize(),
+            success: function(response){
+                if(response.status === 'success'){
+                    alert('Payment detail added successfully');
+                    location.reload(); // Recarga la página para ver los cambios
+                } else {
+                    alert('Error adding payment detail: ' + JSON.stringify(response.errors));
+                }
+            },
+            error: function(response) {
+                alert('Server error: ' + response.statusText);
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

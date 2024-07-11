@@ -20,7 +20,7 @@
                 <div class="small-box bg-success">
                     <div class="inner">
                         <h3>${{ total_payment_paid|currency }}</h3>
-                        <p>Payment Paid</p>
+                        <p>Invoice Paid</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-dollar-sign"></i>
@@ -33,7 +33,7 @@
                 <div class="small-box bg-info">
                     <div class="inner">
                         <h3>${{ total_payment_sent|currency }}</h3>
-                        <p>Payment Sent</p>
+                        <p>Invoice Sent</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-paper-plane"></i>
@@ -131,8 +131,8 @@
                             <p class="card-text"><strong><i class="fas fa-dollar-sign"></i> Total amount: </strong>${{ project.total_amount|currency }}</p>
                             <p class="card-text"><strong><i class="fas fa-clock"></i> Total hours: </strong>{{ project.total_hours|floatformat:"2" }}</p>
                             <p class="card-text"><strong><i class="fas fa-coins"></i> Total cost: </strong>${{ project.total_cost|add:project.total_expenses|currency }}</p>
-                            <p class="card-text"><strong><i class="fas fa-credit-card"></i> Payment Paid: </strong>${{ project.total_payment_paid|currency }}</p>
-                            <p class="card-text"><strong><i class="fas fa-credit-card"></i> Payment Sent: </strong>${{ project.total_payment_sent|currency }}</p>
+                            <p class="card-text"><strong><i class="fas fa-credit-card"></i> Invoice Paid: </strong>${{ project.total_payment_paid|currency }}</p>
+                            <p class="card-text"><strong><i class="fas fa-credit-card"></i> Invoice Sent: </strong>${{ project.total_payment_sent|currency }}</p>
                             <p class="card-text"><strong><i class="fas fa-piggy-bank"></i> Profit: </strong>${{ project.remaining_balance|currency }}</p>
                         </div>
                     </div>

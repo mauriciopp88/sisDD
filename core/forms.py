@@ -60,6 +60,15 @@ class WorkRecordForm(forms.ModelForm):
         }
 
 
+# class TotalAmountDetailsForm(forms.ModelForm):
+#     class Meta:
+#         model = TotalAmountDetails
+#         fields = ['project', 'description_of_work', 'scheduled_value']
+#         widgets = {
+#             'project': forms.HiddenInput(),
+#         }
+#
+
 class TotalAmountDetailsForm(forms.ModelForm):
     class Meta:
         model = TotalAmountDetails
@@ -80,4 +89,3 @@ class PaymentDetailsForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
         }
-

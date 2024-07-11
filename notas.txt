@@ -1,0 +1,3 @@
+Ordenamiento de fechas en tab;a de work record estan como alfabeto y no como fechas.
+Falta opcion de exportar.
+Boton expenses dentro de cada tabla del detalle del proyecto project_detail_dash

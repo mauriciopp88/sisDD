@@ -6,7 +6,9 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth import login as auth_login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponseForbidden
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 import datetime
 from django.utils import timezone
 
@@ -42,12 +44,15 @@ def project_detail_dash(request, project_id):
     project = Project.objects.get(pk=project_id)
     total_amount_details = project.total_amount_details.all()
     total_project_hours = project.total_hours()
+    payment_form = PaymentDetailsForm()
+    total_amount_detail_form = TotalAmountDetailsForm(initial={'project': project_id})
 
     work_records = WorkRecord.objects.filter(project=project)
     employee_totals = {}
     for record in work_records:
         if record.employee.full_name not in employee_totals:
-            employee_totals[record.employee.full_name] = {'hours': record.hours, 'total_cost': record.hours * record.employee.hourly_rate}
+            employee_totals[record.employee.full_name] = {'hours': record.hours,
+                                                          'total_cost': record.hours * record.employee.hourly_rate}
         else:
             employee_totals[record.employee.full_name]['hours'] += record.hours
             employee_totals[record.employee.full_name]['total_cost'] += record.hours * record.employee.hourly_rate
@@ -61,7 +66,9 @@ def project_detail_dash(request, project_id):
         'employee_totals': employee_totals,
         'total_cost': total_cost,
         'total_expenses': total_expenses,
-        'total_project_hours': total_project_hours
+        'total_project_hours': total_project_hours,
+        'payment_detail_form': payment_form,
+        'total_amount_detail_form': total_amount_detail_form,
     })
 
 
@@ -347,7 +354,8 @@ def employee_weekly_hours_report(request):
             end_date += datetime.timedelta(weeks=week_offset)
 
     work_records = WorkRecord.objects.filter(date__range=[start_date, end_date])
-    employee_hours = work_records.values('employee__full_name').annotate(total_hours=Sum('hours')).order_by('employee__full_name')
+    employee_hours = work_records.values('employee__full_name').annotate(total_hours=Sum('hours')).order_by(
+        'employee__full_name')
 
     context = {
         'start_date': start_date,
@@ -365,3 +373,52 @@ class TotalAmountDetailsDeleteView(DeleteView):
     model = TotalAmountDetails
     template_name = 'totalamountdetails_confirm_delete.html'
     success_url = reverse_lazy('totalamountdetails_list')
+
+
+@csrf_exempt
+@require_POST
+@login_required
+@permission_required('app.add_paymentdetails', raise_exception=True)
+def add_payment_detail(request):
+    form = PaymentDetailsForm(request.POST)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'error', 'errors': form.errors})
+
+
+@csrf_exempt
+@require_POST
+@login_required
+@permission_required('app.add_totalamountdetails', raise_exception=True)
+def add_total_amount_detail(request):
+    form = TotalAmountDetailsForm(request.POST)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'error', 'errors': form.errors})
+
+
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+@csrf_exempt
+@require_POST
+@login_required
+@permission_required('app.add_totalamountdetails', raise_exception=True)
+def add_total_amount_detail(request):
+    logger.info("In add_total_amount_detail view")
+    logger.info("Request POST data: %s", request.POST)
+
+    form = TotalAmountDetailsForm(request.POST)
+    if form.is_valid():
+        logger.info("Form is valid")
+        form.save()
+        return JsonResponse({'status': 'success'})
+    else:
+        logger.error("Form is not valid: %s", form.errors)
+        return JsonResponse({'status': 'error', 'errors': form.errors})

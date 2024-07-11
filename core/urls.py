@@ -48,4 +48,9 @@ urlpatterns = [
     path('payment/<int:pk>/', views.PaymentDetailsDetailView.as_view(), name='paymentdetails_detail'),
     path('payment/<int:pk>/update/', views.PaymentDetailsUpdateView.as_view(), name='paymentdetails_update'),
     path('payment/<int:pk>/delete/', views.PaymentDetailsDeleteView.as_view(), name='paymentdetails_delete'),
+
+
+
+    path('add_payment_detail/', views.add_payment_detail, name='add_payment_detail'),
+    path('add_total_amount_detail/', views.add_total_amount_detail, name='add_total_amount_detail'),
 ]
