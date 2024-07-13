@@ -340,6 +340,7 @@ class PaymentDetailsDeleteView(DeleteView):
     success_url = reverse_lazy('paymentdetails_list')
 
 
+@login_required
 def employee_weekly_hours_report(request):
     start_date, end_date = get_previous_week_range()
 
@@ -398,27 +399,4 @@ def add_total_amount_detail(request):
         form.save()
         return JsonResponse({'status': 'success'})
     else:
-        return JsonResponse({'status': 'error', 'errors': form.errors})
-
-
-
-import logging
-
-logger = logging.getLogger(__name__)
-
-@csrf_exempt
-@require_POST
-@login_required
-@permission_required('app.add_totalamountdetails', raise_exception=True)
-def add_total_amount_detail(request):
-    logger.info("In add_total_amount_detail view")
-    logger.info("Request POST data: %s", request.POST)
-
-    form = TotalAmountDetailsForm(request.POST)
-    if form.is_valid():
-        logger.info("Form is valid")
-        form.save()
-        return JsonResponse({'status': 'success'})
-    else:
-        logger.error("Form is not valid: %s", form.errors)
         return JsonResponse({'status': 'error', 'errors': form.errors})

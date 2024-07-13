@@ -186,11 +186,13 @@ class TotalAmountDetails(models.Model):
         return self.scheduled_value - total_completed
 
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # Guarda la instancia primero
         self.balance_to_finish = self.calculate_balance_to_finish()
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs)  # Guarda de nuevo para actualizar balance_to_finish
         project = self.project
         project.total_amount = project.calculate_total_amount()
         project.save()
+
 
 
 @receiver(post_save, sender=TotalAmountDetails)
