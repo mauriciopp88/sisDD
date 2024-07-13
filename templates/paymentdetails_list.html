@@ -23,9 +23,9 @@
                     <td>{{ detail.description }}</td>
                     <td>{{ detail.status }}</td>
                     <td>
-                        <a href="{% url 'paymentdetails_detail' detail.pk %}" class="btn btn-info">View</a>
-                        <a href="{% url 'paymentdetails_update' detail.pk %}" class="btn btn-warning">Edit</a>
-                        <a href="{% url 'paymentdetails_delete' detail.pk %}" class="btn btn-danger">Delete</a>
+                        <a href="{% url 'paymentdetails_detail' detail.pk %}" class="btn btn-xs btn-warning"><i class="fas fa-eye"></i></a>
+                        <a href="{% url 'paymentdetails_update' detail.pk %}" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'paymentdetails_delete' detail.pk %}" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
             {% endfor %}

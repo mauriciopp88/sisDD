@@ -43,8 +43,8 @@
                             <td>{{ employee.hourly_rate }}</td>
                             <td>{{ employee.status }}</td>
                             <td>
-                                <a href="{% url 'employee_update' employee.pk %}" class="btn btn-sm btn-warning">Edit</a>
-                                <a href="{% url 'employee_delete' employee.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                <a href="{% url 'employee_update' employee.pk %}" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'employee_delete' employee.pk %}" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                         {% endfor %}

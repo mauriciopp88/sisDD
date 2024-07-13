@@ -41,8 +41,8 @@
                             <td>{{ project.end_date }}</td>
                             <td>{{ project.status }}</td>
                             <td>
-                                <a href="{% url 'project_update' project.pk %}" class="btn btn-sm btn-warning">Edit</a>
-                                <a href="{% url 'project_delete' project.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                <a href="{% url 'project_update' project.pk %}" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'project_delete' project.pk %}" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                         {% endfor %}

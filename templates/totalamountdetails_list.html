@@ -20,8 +20,8 @@
                         <td>{{ detail.scheduled_value }}</td>
                         <td>
                             <a href="{% url 'totalamountdetails_detail' detail.pk %}" class="btn btn-info">View</a>
-                            <a href="{% url 'totalamountdetails_update' detail.pk %}" class="btn btn-warning">Edit</a>
-                            <a href="{% url 'totalamountdetails_delete' detail.pk %}" class="btn btn-danger">Delete</a>
+                            <a href="{% url 'totalamountdetails_update' detail.pk %}" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'totalamountdetails_delete' detail.pk %}" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></a>
                         </td>
                     </tr>
                 {% endfor %}
