@@ -1,293 +1,454 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 {% block content %}
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1 class="m-0">Project Overview</h1>
-            </div>
-        </div>
-    </div>
-</div>
-
-<section class="content">
-    <div class="container-fluid">
-        <!-- Información general del proyecto -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title">Project Overview</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <p><strong>Name:</strong> {{ project.name }}</p>
-                        <p><strong>Status:</strong> {{ project.status }}</p>
-                        <p><strong>Description:</strong> {{ project.description }}</p>
-                        <p><strong>Drawings:</strong> <a href="{{ project.drawings }}" target="_blank">View or Download</a></p>
-                        <p><strong>Reports:</strong> <a href="{{ project.reports_p }}" target="_blank">View or Download</a></p>
-                    </div>
-                    <div class="col-md-4">
-                        <p><strong>Contact Name:</strong> {{ project.contact_name }}</p>
-                        <p><strong>Contact Phone:</strong> <a href="tel:{{ project.contact_phone }}">{{ project.contact_phone }}</a></p>
-                        <p><strong>Address:</strong> <a href="https://www.google.com/maps/search/?api=1&query={{ project.address }}" target="_blank">{{ project.address }}</a></p>
-                        <p><strong>Start Date:</strong> {{ project.start_date }}</p>
-                        <p><strong>End Date:</strong> {{ project.end_date }}</p>
-                    </div>
-                    <div class="col-md-4">
-                        <p><strong>Contract Amount:</strong> ${{ project.contract_amount|floatformat:"2" }}</p>
-                        <p><strong>Total Amount:</strong> ${{ project.total_amount|floatformat:"2" }}</p>
-                        <p><strong>Hours:</strong> {{ total_project_hours }}</p>
-                        <p><strong>Labor cost:</strong> ${{ total_cost|floatformat:"2" }}</p>
-                        <p><strong>Expenses:</strong> ${{ total_expenses|floatformat:"2" }}</p>
-                        <p><strong>Payment Paid:</strong> ${{ project.total_payment_paid|floatformat:"2" }}</p>
-                        <p><strong>Payment Sent:</strong> ${{ project.total_payment_sent|floatformat:"2" }}</p>
-                        <p><strong>Profit:</strong> ${{ project.remaining_balance|floatformat:"2" }}</p>
-                    </div>
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Project Overview</h1>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Detalles del monto total -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title">Total Amount Details</h5>
-                <button type="button" class="btn btn-primary float-right ml-2" data-toggle="modal" data-target="#addTotalAmountDetailModal">Add Total Amount Detail</button>
-                <button type="button" class="btn btn-secondary float-right" data-toggle="modal" data-target="#addPaymentDetailModal">Add Payment Detail</button>
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Información general del proyecto -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">Project Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Name:</strong> {{ project.name }}</p>
+                            <p><strong>Status:</strong> {{ project.status }}</p>
+                            <p><strong>Description:</strong> {{ project.description }}</p>
+                            <p><strong>Drawings:</strong> <a href="{{ project.drawings }}" target="_blank">View or Download</a></p>
+                            <p><strong>Reports:</strong> <a href="{{ project.reports_p }}" target="_blank">View or Download</a></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Contact Name:</strong> {{ project.contact_name }}</p>
+                            <p><strong>Contact Phone:</strong> <a href="tel:{{ project.contact_phone }}">{{ project.contact_phone }}</a></p>
+                            <p><strong>Address:</strong> <a href="https://www.google.com/maps/search/?api=1&query={{ project.address }}" target="_blank">{{ project.address }}</a></p>
+                            <p><strong>Start Date:</strong> {{ project.start_date }}</p>
+                            <p><strong>End Date:</strong> {{ project.end_date }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Contract Amount:</strong> ${{ project.contract_amount|floatformat:"2" }}</p>
+                            <p><strong>Total Amount:</strong> ${{ project.total_amount|floatformat:"2" }}</p>
+                            <p><strong>Hours:</strong> {{ total_project_hours }}</p>
+                            <p><strong>Labor cost:</strong> ${{ total_cost|floatformat:"2" }}</p>
+                            <p><strong>Expenses:</strong> ${{ total_expenses|floatformat:"2" }}</p>
+                            <p><strong>Invoice Sent:</strong> ${{ project.total_payment_sent|floatformat:"2" }}</p>
+                            <p><strong>Invoice Paid:</strong> ${{ project.total_payment_paid|floatformat:"2" }}</p>
+                            <p><strong>Profit:</strong> ${{ project.remaining_balance|floatformat:"2" }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <table id="total-amount-details-table" class="table table-bordered table-hover dataTable">
-                    <thead>
-                    <tr>
-                        <th>Description of Work</th>
-                        <th>Scheduled Value</th>
-                        <th>Payment</th>
-                        <th>Balance to Finish</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for detail in total_amount_details %}
-                    <tr>
-                        <td>{{ detail.description_of_work }}</td>
-                        <td>${{ detail.scheduled_value|floatformat:"2" }}</td>
-                        <td>
-                            <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#paymentMODModal{{ detail.pk }}">
-                                {{ detail.payment.count }}
-                            </button>
-                            ${{ detail.total_payment|floatformat:"2" }}
-                        </td>
-                        <td>${{ detail.balance_to_finish|floatformat:"2" }}</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+
+            <!-- Detalles del monto total -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">Total Amount Details</h5>
+                    <button type="button" class="btn btn-primary float-right ml-2" data-toggle="modal" data-target="#addTotalAmountDetailModal">Add Total Amount Detail</button>
+                    <button type="button" class="btn btn-secondary float-right" data-toggle="modal" data-target="#addPaymentDetailModal">Add Payment Detail</button>
+                </div>
+                <div class="card-body">
+                    <table id="total-amount-details-table" class="table table-bordered table-hover dataTable">
+                        <thead>
+                        <tr>
+                            <th>Description of Work</th>
+                            <th>Scheduled Value</th>
+                            <th>Invoice sent</th>
+                            <th>Invoice paid</th>
+                            <th>Balance to Finish</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for detail in total_amount_details %}
+                            <tr>
+                                <td>{{ detail.description_of_work }}</td>
+                                <td>${{ detail.scheduled_value|floatformat:"2" }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#paymentMODModalSENT{{ detail.pk }}">
+                                        {{ payment_counts|get_item:detail.pk|get_item:"sent" }}
+                                    </button>
+                                    ${{ payment_counts|get_item:detail.pk|get_item:"total_sent"|floatformat:"2" }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#paymentMODModal{{ detail.pk }}">
+                                        {{ payment_counts|get_item:detail.pk|get_item:"paid" }}
+                                    </button>
+                                    ${{ payment_counts|get_item:detail.pk|get_item:"total_paid"|floatformat:"2" }}
+                                </td>
+                                <td>${{ payment_counts|get_item:detail.pk|get_item:"balance_to_finish"|floatformat:"2" }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Tabla de gastos -->
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title">Expenses</h5>
+                            <a href="{% url 'expense_create' %}" class="btn btn-primary float-right ml-2">Add Expense</a>
+                        </div>
+                        <div class="card-body">
+                            <table id="expenses-table" class="table table-bordered table-hover dataTable">
+                                <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Value</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for expense in project.expense_set.all %}
+                                    <tr>
+                                        <td>{{ expense.date }}</td>
+                                        <td>${{ expense.value|floatformat:"2" }}</td>
+                                        <td>{{ expense.description }}</td>
+                                        <td>
+                                            <a href="{% url 'expense_update' expense.pk %}" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>
+                                            <form method="post" action="{% url 'expense_delete' expense.pk %}?next={% url 'project_detail_dash' project.id %}" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="4"><strong>Total:</strong> ${{ project.total_expenses|floatformat:"2" }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de registros de trabajo de empleados -->
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title">Employee Work Records</h5>
+                            <a href="{% url 'add_work_record' %}" class="btn btn-primary float-right ml-2">Add Work Record</a>
+                        </div>
+                        <div class="card-body">
+                            <table id="employee-work-records-table" class="table table-bordered table-hover dataTable">
+                                <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Total Hours</th>
+                                    <th>Total Labor Cost</th>
+{#                                    <th>Actions</th>#}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for employee, totals in employee_totals.items %}
+                                    <tr>
+                                        <td>{{ employee }}</td>
+                                        <td>{{ totals.hours }}</td>
+                                        <td>${{ totals.total_cost|floatformat:"2" }}</td>
+{#                                        <td>#}
+{#                                            <a href="{% url 'workrecord_update' totals.pk %}" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>#}
+{#                                            <form method="post" action="{% url 'workrecord_delete' totals.pk %}?next={% url 'project_detail_dash' project.id %}" style="display:inline;">#}
+{#                                                {% csrf_token %}#}
+{#                                                <button type="submit" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></button>#}
+{#                                            </form>#}
+{#                                        </td>#}
+                                    </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td><strong>Total:</strong></td>
+                                    <td><strong>{{ total_project_hours|floatformat:"2" }}</strong></td>
+                                    <td><strong>${{ total_cost|floatformat:"2" }}</strong></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
+    </section>
 
-        <div class="row">
-            <!-- Tabla de gastos -->
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title">Expenses</h5>
+    <!-- Modal para agregar Total Amount Details -->
+    <div class="modal fade" id="addTotalAmountDetailModal" tabindex="-1" role="dialog" aria-labelledby="addTotalAmountDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTotalAmountDetailModalLabel">Add Total Amount Detail</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="totalAmountDetailForm" method="post" action="{% url 'add_total_amount_detail' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="project" value="{{ project.id }}">
+                        {{ total_amount_detail_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar Payment Details -->
+    <div class="modal fade" id="addPaymentDetailModal" tabindex="-1" role="dialog" aria-labelledby="addPaymentDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPaymentDetailModalLabel">Add Payment Detail</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="paymentDetailForm" method="post" action="{% url 'add_payment_detail' %}">
+                        {% csrf_token %}
+                        {{ payment_detail_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar Expense -->
+    <div class="modal fade" id="addExpenseModal" tabindex="-1" role="dialog" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addExpenseModalLabel">Add Expense</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="expenseForm" method="post" action="{% url 'expense_create' %}">
+                        {% csrf_token %}
+                        {{ expense_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar Work Record -->
+    <div class="modal fade" id="addWorkRecordModal" tabindex="-1" role="dialog" aria-labelledby="addWorkRecordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addWorkRecordModalLabel">Add Work Record</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="workRecordForm" method="post" action="{% url 'add_work_record' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="project" value="{{ project.id }}">
+                        {{ work_record_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales para Payment Details PAGADOS -->
+    {% for detail in total_amount_details %}
+        <div class="modal fade" id="paymentMODModal{{ detail.pk }}" tabindex="-1" role="dialog" aria-labelledby="paymentMODModal{{ detail.pk }}Label" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="paymentMODModal{{ detail.pk }}Label">Payment Details - PAID</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <table id="expenses-table" class="table table-bordered table-hover dataTable">
+                    <div class="modal-body">
+                        <table id="payment-details-table-{{ detail.pk }}" class="table table-bordered table-hover dataTable">
                             <thead>
                             <tr>
                                 <th>Date</th>
                                 <th>Value</th>
                                 <th>Description</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for expense in project.expense_set.all %}
-                            <tr>
-                                <td>{{ expense.date }}</td>
-                                <td>${{ expense.value|floatformat:"2" }}</td>
-                                <td>{{ expense.description }}</td>
+                            {% for completed_detail in detail.payment.all %}
+                                {% if completed_detail.status == 'Paid' %}
+                                    <tr>
+                                        <td>{{ completed_detail.date }}</td>
+                                        <td>${{ completed_detail.value|floatformat:"2" }}</td>
+                                        <td>{{ completed_detail.description }}</td>
+                                        <td>
+                                            {% if completed_detail.status == 'Paid' %}
+                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Paid</span>
+                                            {% else %}
+                                                <span class="badge badge-warning"><i class="fas fa-hourglass-half"></i> Sent</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'edit_payment_detail' completed_detail.pk %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit fa-xs"></i>
+                                            </a>
+                                            <form method="post" action="{% url 'delete_payment_detail' completed_detail.pk %}" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash-alt fa-xs"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endif %}
                             {% endfor %}
-                            <tr>
-                                <td colspan="3"><strong>Total:</strong> ${{ project.total_expenses|floatformat:"2" }}</td>
-                            </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+        </div>
+    {% endfor %}
 
-            <!-- Tabla de registros de trabajo de empleados -->
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title">Employee Work Records</h5>
+    <!-- Modales para Payment Details ENVIADOS -->
+    {% for detail in total_amount_details %}
+        <div class="modal fade" id="paymentMODModalSENT{{ detail.pk }}" tabindex="-1" role="dialog" aria-labelledby="paymentMODModalSENT{{ detail.pk }}Label" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="paymentMODModalSENT{{ detail.pk }}Label">Payment Details - SENT</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <table id="employee-work-records-table" class="table table-bordered table-hover dataTable">
+                    <div class="modal-body">
+                        <table id="payment-details-table-{{ detail.pk }}" class="table table-bordered table-hover dataTable">
                             <thead>
                             <tr>
-                                <th>Employee</th>
-                                <th>Total Hours</th>
-                                <th>Total Labor Cost</th>
+                                <th>Date</th>
+                                <th>Value</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for employee, totals in employee_totals.items %}
-                            <tr>
-                                <td>{{ employee }}</td>
-                                <td>{{ totals.hours }}</td>
-                                <td>${{ totals.total_cost|floatformat:"2" }}</td>
-                            </tr>
+                            {% for completed_detail in detail.payment.all %}
+                                {% if completed_detail.status == 'Sent' %}
+                                    <tr>
+                                        <td>{{ completed_detail.date }}</td>
+                                        <td>${{ completed_detail.value|floatformat:"2" }}</td>
+                                        <td>{{ completed_detail.description }}</td>
+                                        <td>
+                                            {% if completed_detail.status == 'Sent' %}
+                                                <span class="badge badge-warning"><i class="fas fa-hourglass-half"></i> Sent</span>
+                                            {% else %}
+                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Paid</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'edit_payment_detail' completed_detail.pk %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit fa-xs"></i>
+                                            </a>
+                                            <form method="post" action="{% url 'delete_payment_detail' completed_detail.pk %}" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash-alt fa-xs"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endif %}
                             {% endfor %}
-                            <tr>
-                                <td><strong>Total:</strong></td>
-                                <td><strong>{{ total_project_hours|floatformat:"2" }}</strong></td>
-                                <td><strong>${{ total_cost|floatformat:"2" }}</strong></td>
-                            </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<!-- Modal para agregar Total Amount Details -->
-<div class="modal fade" id="addTotalAmountDetailModal" tabindex="-1" role="dialog" aria-labelledby="addTotalAmountDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addTotalAmountDetailModalLabel">Add Total Amount Detail</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="totalAmountDetailForm" method="post" action="{% url 'add_total_amount_detail' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="project" value="{{ project.id }}">
-                    {{ total_amount_detail_form.as_p }}
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-    
-    
-<!-- Modal para agregar Payment Details -->
-<div class="modal fade" id="addPaymentDetailModal" tabindex="-1" role="dialog" aria-labelledby="addPaymentDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addPaymentDetailModalLabel">Add Payment Detail</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="paymentDetailForm" method="post" action="{% url 'add_payment_detail' %}">
-                    {% csrf_token %}
-                    {{ payment_detail_form.as_p }}
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modales para Payment Details individuales -->
-{% for detail in total_amount_details %}
-<div class="modal fade" id="paymentMODModal{{ detail.pk }}" tabindex="-1" role="dialog" aria-labelledby="paymentMODModal{{ detail.pk }}Label" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="paymentMODModal{{ detail.pk }}Label">Payment Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <table id="payment-details-table-{{ detail.pk }}" class="table table-bordered table-hover dataTable">
-                    <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Value</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for completed_detail in detail.payment.all %}
-                    <tr>
-                        <td>{{ completed_detail.date }}</td>
-                        <td>${{ completed_detail.value|floatformat:"2" }}</td>
-                        <td>{{ completed_detail.description }}</td>
-                        <td>
-                            {% if completed_detail.status == 'Paid' %}
-                            <span class="badge badge-success"><i class="fas fa-check-circle"></i> Paid</span>
-                            {% else %}
-                            <span class="badge badge-warning"><i class="fas fa-hourglass-half"></i> Sent</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-{#                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPaymentDetailModal">Add Payment Detail</button>#}
-            </div>
-        </div>
-    </div>
-</div>
-{% endfor %}
+    {% endfor %}
 
 {% endblock %}
 
 {% block scripts %}
-<script>
-$(document).ready(function(){
-    $("#totalAmountDetailForm").on("submit", function(e){
-        e.preventDefault();
-        var form = $(this);
-        $.ajax({
-            type: form.attr('method'),
-            url: form.attr('action'),
-            data: form.serialize(),
-            success: function(response){
-                if(response.status === 'success'){
-                    alert('Total amount detail added successfully');
-                    location.reload(); // Recarga la página para ver los cambios
-                } else {
-                    alert('Error adding total amount detail: ' + JSON.stringify(response.errors));
-                }
-            },
-            error: function(response) {
-                alert('Server error: ' + response.statusText);
-            }
-        });
-    });
+    <script>
+        $(document).ready(function(){
+            $("#totalAmountDetailForm").on("submit", function(e){
+                e.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    success: function(response){
+                        if(response.status === 'success'){
+                            alert('Total amount detail added successfully');
+                            location.reload(); // Recarga la página para ver los cambios
+                        } else {
+                            alert('Error adding total amount detail: ' + JSON.stringify(response.errors));
+                        }
+                    },
+                    error: function(response) {
+                        alert('Server error: ' + response.statusText);
+                    }
+                });
+            });
 
-    $("#paymentDetailForm").on("submit", function(e){
-        e.preventDefault();
-        var form = $(this);
-        $.ajax({
-            type: form.attr('method'),
-            url: form.attr('action'),
-            data: form.serialize(),
-            success: function(response){
-                if(response.status === 'success'){
-                    alert('Payment detail added successfully');
-                    location.reload(); // Recarga la página para ver los cambios
-                } else {
-                    alert('Error adding payment detail: ' + JSON.stringify(response.errors));
-                }
-            },
-            error: function(response) {
-                alert('Server error: ' + response.statusText);
-            }
+            $("#paymentDetailForm").on("submit", function(e){
+                e.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    success: function(response){
+                        if(response.status === 'success'){
+                            alert('Payment detail added successfully');
+                            location.reload(); // Recarga la página para ver los cambios
+                        } else {
+                            alert('Error adding payment detail: ' + JSON.stringify(response.errors));
+                        }
+                    },
+                    error: function(response) {
+                        alert('Server error: ' + response.statusText);
+                    }
+                });
+            });
+
+            $("#workRecordForm").on("submit", function(e){
+                e.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    success: function(response){
+                        if(response.status === 'success'){
+                            alert('Work record added successfully');
+                            location.reload(); // Recarga la página para ver los cambios
+                        } else {
+                            alert('Error adding work record: ' + JSON.stringify(response.errors));
+                        }
+                    },
+                    error: function(response) {
+                        alert('Server error: ' + response.statusText);
+                    }
+                });
+            });
         });
-    });
-});
-</script>
+    </script>
 {% endblock %}

@@ -2,85 +2,85 @@
 {% load custom_filters %}
 
 {% block content %}
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1 class="m-0">Create Project</h1>
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Create Project</h1>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<section class="content">
-    <div class="container-fluid">
-        <div class="card card-primary">
-            <div class="card-header">
-                <h3 class="card-title">Project Details</h3>
-            </div>
-            <form method="post">
-                {% csrf_token %}
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_name">Name</label>
-                                {{ form.name|add_class:"form-control" }}
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Project Details</h3>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_name">Name</label>
+                                    {{ form.name|add_class:"form-control" }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_description">Description</label>
+                                    {{ form.description|add_class:"form-control" }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_contact_name">Contact Name</label>
+                                    {{ form.contact_name|add_class:"form-control" }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_contact_phone">Contact Phone</label>
+                                    {{ form.contact_phone|add_class:"form-control" }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_address">Address</label>
+                                    {{ form.address|add_class:"form-control" }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_start_date">Start Date</label>
+                                    {{ form.start_date|add_class:"form-control" }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_end_date">End Date</label>
+                                    {{ form.end_date|add_class:"form-control" }}
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="id_description">Description</label>
-                                {{ form.description|add_class:"form-control" }}
-                            </div>
-                            <div class="form-group">
-                                <label for="id_contact_name">Contact Name</label>
-                                {{ form.contact_name|add_class:"form-control" }}
-                            </div>
-                            <div class="form-group">
-                                <label for="id_contact_phone">Contact Phone</label>
-                                {{ form.contact_phone|add_class:"form-control" }}
-                            </div>
-                            <div class="form-group">
-                                <label for="id_address">Address</label>
-                                {{ form.address|add_class:"form-control" }}
-                            </div>
-                            <div class="form-group">
-                                <label for="id_start_date">Start Date</label>
-                                {{ form.start_date|add_class:"form-control" }}
-                            </div>
-                            <div class="form-group">
-                                <label for="id_end_date">End Date</label>
-                                {{ form.end_date|add_class:"form-control" }}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_contract_amount">Contract Amount</label>
-                                {{ form.contract_amount|add_class:"form-control" }}
-                            </div>
-                            <div class="form-group">
-                                <label for="id_total_amount">Total Amount</label>
-                                {{ form.total_amount|add_class:"form-control" }}
-                            </div>
-                            <div class="form-group">
-                                <label for="id_drawings">Drawings</label>
-                                {{ form.drawings|add_class:"form-control" }}
-                            </div>
-                            <div class="form-group">
-                                <label for="id_reports_p">Reports</label>
-                                {{ form.reports_p|add_class:"form-control" }}
-                            </div>
-                            <div class="form-group">
-                                <label for="id_status">Status</label>
-                                {{ form.status|add_class:"form-control" }}
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_contract_amount">Contract Amount</label>
+                                    {{ form.contract_amount|add_class:"form-control" }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_total_amount">Total Amount</label>
+                                    {{ form.total_amount|add_class:"form-control"|add_attr:'readonly:true'|add_attr:'value:0' }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_drawings">Drawings</label>
+                                    {{ form.drawings|add_class:"form-control" }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_reports_p">Reports</label>
+                                    {{ form.reports_p|add_class:"form-control" }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_status">Status</label>
+                                    {{ form.status|add_class:"form-control" }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 {% endblock %}

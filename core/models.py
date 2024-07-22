@@ -25,7 +25,7 @@ class Project(models.Model):
     end_date = models.DateField(verbose_name="End Date", null=True, blank=True)
     contract_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Contract Amount", null=True,
                                           blank=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Total Amount", default=0)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Total Amount", default=0, null=True, blank=True)
     drawings = models.URLField(verbose_name="Drawings", null=True, blank=True)
     reports_p = models.URLField(verbose_name="Reports", null=True, blank=True)
     status = models.ForeignKey(ProjectStatus, on_delete=models.CASCADE, verbose_name="Status")
@@ -53,24 +53,20 @@ class Project(models.Model):
         return total_expenses + total_employee_costs
 
     def total_payment_paid(self):
-        return PaymentDetails.objects.filter(total_amount_detail__project=self, status='Paid').aggregate(total=Sum('value'))['total'] or 0
+        return PaymentDetails.objects.filter(total_amount_detail__project=self, status='Paid').aggregate(
+            total=Sum('value'))['total'] or 0
 
     def total_payment_sent(self):
-        return PaymentDetails.objects.filter(total_amount_detail__project=self, status='Sent').aggregate(total=Sum('value'))['total'] or 0
+        return PaymentDetails.objects.filter(total_amount_detail__project=self, status='Sent').aggregate(
+            total=Sum('value'))['total'] or 0
 
     def remaining_balance(self):
         return self.total_payment_paid() - self.total_expenses() - self.total_cost()
 
     def save(self, *args, **kwargs):
-        self.total_amount = self.calculate_total_amount()
         super().save(*args, **kwargs)
-
-    def total_payment_paid(self):
-        return PaymentDetails.objects.filter(total_amount_detail__project=self, status='Paid').aggregate(total=Sum('value'))['total'] or 0
-
-    def total_payment_sent(self):
-        return PaymentDetails.objects.filter(total_amount_detail__project=self, status='Sent').aggregate(total=Sum('value'))['total'] or 0
-
+        self.total_amount = self.calculate_total_amount()
+        super().save(update_fields=['total_amount'])
 
 
 # class IncomeType(models.Model):
@@ -158,6 +154,7 @@ class WorkRecord(models.Model):
     class Meta:
         verbose_name = "Work Record"
         verbose_name_plural = "Work Records"
+        unique_together = ('employee', 'project', 'date')
 
     def __str__(self):
         return f"{self.employee.full_name} - {self.hours} horas"
@@ -186,13 +183,12 @@ class TotalAmountDetails(models.Model):
         return self.scheduled_value - total_completed
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # Guarda la instancia primero
+        super().save(*args, **kwargs)
         self.balance_to_finish = self.calculate_balance_to_finish()
-        super().save(*args, **kwargs)  # Guarda de nuevo para actualizar balance_to_finish
+        super().save(*args, **kwargs)
         project = self.project
         project.total_amount = project.calculate_total_amount()
         project.save()
-
 
 
 @receiver(post_save, sender=TotalAmountDetails)

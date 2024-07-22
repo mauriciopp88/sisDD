@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.db.models import Sum
 from django.contrib.auth.decorators import login_required, permission_required
@@ -46,12 +46,11 @@ def project_detail_dash(request, project_id):
     total_project_hours = project.total_hours()
     payment_form = PaymentDetailsForm()
     total_amount_detail_form = TotalAmountDetailsForm(initial={'project': project_id})
-
     work_records = WorkRecord.objects.filter(project=project)
     employee_totals = {}
     for record in work_records:
         if record.employee.full_name not in employee_totals:
-            employee_totals[record.employee.full_name] = {'hours': record.hours,
+            employee_totals[record.employee.full_name] = {'pk': record.pk, 'hours': record.hours,
                                                           'total_cost': record.hours * record.employee.hourly_rate}
         else:
             employee_totals[record.employee.full_name]['hours'] += record.hours
@@ -59,6 +58,18 @@ def project_detail_dash(request, project_id):
 
     total_cost = sum(employee_total['total_cost'] for employee_total in employee_totals.values())
     total_expenses = project.total_expenses()
+
+    # Calcular los conteos y las sumas de pagos "Sent" y "Paid" por detalle de monto total
+    payment_counts = {}
+    for detail in total_amount_details:
+        total_paid = detail.payment.filter(status='Paid').aggregate(total=Sum('value'))['total'] or 0
+        payment_counts[detail.pk] = {
+            'sent': detail.payment.filter(status='Sent').count(),
+            'paid': detail.payment.filter(status='Paid').count(),
+            'total_sent': detail.payment.filter(status='Sent').aggregate(total=Sum('value'))['total'] or 0,
+            'total_paid': total_paid,
+            'balance_to_finish': detail.scheduled_value - total_paid
+        }
 
     return render(request, 'project_detail_dash.html', {
         'project': project,
@@ -69,6 +80,7 @@ def project_detail_dash(request, project_id):
         'total_project_hours': total_project_hours,
         'payment_detail_form': payment_form,
         'total_amount_detail_form': total_amount_detail_form,
+        'payment_counts': payment_counts,
     })
 
 
@@ -163,7 +175,13 @@ class ExpenseCreateView(CreateView):
     model = Expense
     form_class = ExpenseForm
     template_name = 'expense_form.html'
-    success_url = reverse_lazy('dashboard')
+
+    def form_valid(self, form):
+        expense = form.save(commit=False)
+        project_id = self.request.POST.get('project')  # Obtener el project_id del formulario o URL
+        expense.project_id = project_id  # Asignar el project_id al gasto
+        expense.save()
+        return redirect(reverse('project_detail_dash', kwargs={'project_id': project_id}))
 
 
 @method_decorator(login_required, name='dispatch')
@@ -179,7 +197,12 @@ class ExpenseUpdateView(UpdateView):
     model = Expense
     form_class = ExpenseForm
     template_name = 'expense_update_form.html'
-    success_url = reverse_lazy('dashboard')
+
+    def form_valid(self, form):
+        expense = form.save(commit=False)
+        project_id = expense.project_id  # Obtener el project_id del gasto
+        expense.save()
+        return redirect(reverse('project_detail_dash', kwargs={'project_id': project_id}))
 
 
 @method_decorator(login_required, name='dispatch')
@@ -187,7 +210,10 @@ class ExpenseUpdateView(UpdateView):
 class ExpenseDeleteView(DeleteView):
     model = Expense
     template_name = 'expense_confirm_delete.html'
-    success_url = reverse_lazy('dashboard')
+
+    def get_success_url(self):
+        project_id = self.object.project.id
+        return reverse('project_detail_dash', kwargs={'project_id': project_id})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -400,3 +426,92 @@ def add_total_amount_detail(request):
         return JsonResponse({'status': 'success'})
     else:
         return JsonResponse({'status': 'error', 'errors': form.errors})
+
+
+@login_required
+@permission_required('app.change_paymentdetails', raise_exception=True)
+def edit_payment_detail(request, pk):
+    payment_detail = get_object_or_404(PaymentDetails, pk=pk)
+    if request.method == 'POST':
+        form = PaymentDetailsForm(request.POST, instance=payment_detail)
+        if form.is_valid():
+            form.save()
+            return redirect('project_detail_dash', project_id=payment_detail.total_amount_detail.project.pk)
+    else:
+        form = PaymentDetailsForm(instance=payment_detail)
+    return render(request, 'paymentdetails_form.html', {'form': form})
+
+
+@login_required
+@permission_required('app.add_workrecord', raise_exception=True)
+def add_work_record(request):
+    if request.method == 'POST':
+        form = WorkRecordForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'errors': form.errors})
+    else:
+        form = WorkRecordForm()
+    return render(request, 'workrecord_form.html', {'form': form})
+
+
+@login_required
+@permission_required('app.change_workrecord', raise_exception=True)
+def edit_work_record(request, pk):
+    work_record = get_object_or_404(WorkRecord, pk=pk)
+    if request.method == 'POST':
+        form = WorkRecordForm(request.POST, instance=work_record)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'errors': form.errors})
+    else:
+        form = WorkRecordForm(instance=work_record)
+    return render(request, 'workrecord_form.html', {'form': form})
+
+
+@login_required
+@permission_required('app.delete_workrecord', raise_exception=True)
+def delete_work_record(request, pk):
+    work_record = get_object_or_404(WorkRecord, pk=pk)
+    if request.method == 'POST':
+        work_record.delete()
+        return redirect('project_detail_dash', project_id=work_record.project.pk)
+    return render(request, 'workrecord_confirm_delete.html', {'work_record': work_record})
+
+
+class WorkRecordCreateView(CreateView):
+    model = WorkRecord
+    form_class = WorkRecordForm
+    template_name = 'workrecord_form.html'
+
+    def form_valid(self, form):
+        work_record = form.save(commit=False)
+        project_id = self.request.POST.get('project')  # Obtener el project_id del formulario
+        work_record.project_id = project_id  # Asignar el project_id al registro de trabajo
+        work_record.save()
+        return redirect(reverse('project_detail_dash', kwargs={'project_id': project_id}))
+
+
+class WorkRecordUpdateView(UpdateView):
+    model = WorkRecord
+    form_class = WorkRecordForm
+    template_name = 'workrecord_form.html'
+
+    def form_valid(self, form):
+        work_record = form.save(commit=False)
+        project_id = work_record.project_id  # Obtener el project_id del registro de trabajo
+        work_record.save()
+        return redirect(reverse('project_detail_dash', kwargs={'project_id': project_id}))
+
+
+class WorkRecordDeleteView(DeleteView):
+    model = WorkRecord
+    template_name = 'workrecord_confirm_delete.html'
+
+    def get_success_url(self):
+        project_id = self.object.project_id
+        return reverse('project_detail_dash', kwargs={'project_id': project_id})

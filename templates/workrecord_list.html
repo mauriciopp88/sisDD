@@ -23,42 +23,42 @@
                 </div>
             </div>
             <div class="card-body">
-{#                <form id="filter-form" class="row g-3 mb-3">#}
-{#                    <div class="col-md-2">#}
-{#                        <label for="start-date" class="form-label">Start Date</label>#}
-{#                        <input type="date" id="start-date" name="start-date" class="form-control">#}
-{#                    </div>#}
-{#                    <div class="col-md-2">#}
-{#                        <label for="end-date" class="form-label">End Date</label>#}
-{#                        <input type="date" id="end-date" name="end-date" class="form-control">#}
-{#                    </div>#}
-{#                    <div class="col-md-2">#}
-{#                        <label for="project" class="form-label">Project</label>#}
-{#                        <select id="project" name="project" class="form-select">#}
-{#                            <option value="">All Projects</option>#}
-{#                            {% for project in projects %}#}
-{#                                <option value="{{ project.name }}">{{ project.name }}</option>#}
-{#                            {% endfor %}#}
-{#                        </select>#}
-{#                    </div>#}
-{#                    <div class="col-md-3">#}
-{#                        <label for="employee" class="form-label">Employee</label>#}
-{#                        <select id="employee" name="employee" class="form-select">#}
-{#                            <option value="">All Employees</option>#}
-{#                            {% for employee in employees %}#}
-{#                                <option value="{{ employee.full_name }}">{{ employee.full_name }}</option>#}
-{#                            {% endfor %}#}
-{#                        </select>#}
-{#                    </div>#}
-{#                    <div class="col-12">#}
-{#                        <button type="button" id="filter-button" class="btn btn-success">#}
-{#                            <i class="fas fa-filter"></i> Filter#}
-{#                        </button>#}
-{#                        <button type="button" id="reset-button" class="btn btn-secondary">#}
-{#                            <i class="fas fa-undo"></i> Reset#}
-{#                        </button>#}
-{#                    </div>#}
-{#                </form>#}
+                <form id="filter-form" class="row g-3 mb-3">
+                    <div class="col-md-2">
+                        <label for="start-date" class="form-label">Start Date</label>
+                        <input type="date" id="start-date" name="start-date" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="end-date" class="form-label">End Date</label>
+                        <input type="date" id="end-date" name="end-date" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="project" class="form-label">Project</label>
+                        <select id="project" name="project" class="form-select">
+                            <option value="">All Projects</option>
+                            {% for project in projects %}
+                                <option value="{{ project.name }}">{{ project.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="employee" class="form-label">Employee</label>
+                        <select id="employee" name="employee" class="form-select">
+                            <option value="">All Employees</option>
+                            {% for employee in employees %}
+                                <option value="{{ employee.full_name }}">{{ employee.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="button" id="filter-button" class="btn btn-success">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                        <button type="button" id="reset-button" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                </form>
 
                 <table id="workrecord-table" class="table table-striped table-bordered">
                     <thead>
@@ -81,9 +81,12 @@
                                 <a href="{% url 'workrecord_update' workrecord.pk %}" class="btn btn-xs btn-warning" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="{% url 'workrecord_delete' workrecord.pk %}" class="btn btn-xs btn-danger" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+                                <form method="post" action="{% url 'workrecord_delete' workrecord.pk %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-xs btn-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         {% endfor %}

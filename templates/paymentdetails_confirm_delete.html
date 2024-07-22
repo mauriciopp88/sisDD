@@ -1,13 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Confirm Deletion</h2>
-    <p>Are you sure you want to delete the Total amount detail: <strong>{{ object }}</strong>?</p>
-    <form method="post">
-        {% csrf_token %}
-        <a href="{% url 'totalamountdetails_list' %}" class="btn btn-secondary">Cancel</a>
-        <button type="submit" class="btn btn-danger">Confirm</button>
-    </form>
-</div>
+  <h2>Confirm Deletion</h2>
+  <form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to delete "{{ object }}"?</p>
+    <button type="submit" class="btn btn-danger">Yes, delete</button>
+    <a href="{% url 'project_detail_dash' object.total_amount_detail.project.pk %}" class="btn btn-secondary">Cancel</a>
+  </form>
 {% endblock %}

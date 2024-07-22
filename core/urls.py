@@ -1,19 +1,19 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+from .views import add_work_record, edit_work_record, delete_work_record, project_detail_dash
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('login/', views.login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
-    path('project/<int:project_id>/', views.project_detail_dash, name='project_detail_dash'),
 
     # Project URLs
     path('projects/', views.ProjectListView.as_view(), name='project_list'),
     path('project/create/', views.ProjectCreateView.as_view(), name='project_create'),
-    path('project/<int:pk>/', views.ProjectDetailView.as_view(), name='project_detail'),
     path('project/<int:pk>/update/', views.ProjectUpdateView.as_view(), name='project_update'),
     path('project/<int:pk>/delete/', views.ProjectDeleteView.as_view(), name='project_delete'),
+    path('project/<int:project_id>/', views.project_detail_dash, name='project_detail_dash'),
 
     # Expense URLs
     path('expense/', views.ExpenseListView.as_view(), name='expense_list'),
@@ -33,24 +33,27 @@ urlpatterns = [
 
     # WorkRecord URLs
     path('workrecord/', views.WorkRecordListView.as_view(), name='workrecord_list'),
-    path('workrecord/create/', views.WorkRecordCreate.as_view(), name='workrecord_create'),
-    path('workrecord/<int:pk>/update/', views.WorkRecordUpdate.as_view(), name='workrecord_update'),
-    path('workrecord/<int:pk>/delete/', views.WorkRecordDelete.as_view(), name='workrecord_delete'),
+    path('workrecord/add/', views.WorkRecordCreateView.as_view(), name='add_work_record'),
+    path('workrecord/<int:pk>/update/', views.WorkRecordUpdateView.as_view(), name='workrecord_update'),
+    path('workrecord/<int:pk>/delete/', views.WorkRecordDeleteView.as_view(), name='workrecord_delete'),
 
+    # TotalAmountDetails URLs
     path('totalamountdetails/', views.TotalAmountDetailsListView.as_view(), name='totalamountdetails_list'),
     path('totalamountdetails/create/', views.TotalAmountDetailsCreateView.as_view(), name='totalamountdetails_create'),
     path('totalamountdetails/<int:pk>/', views.TotalAmountDetailsDetailView.as_view(), name='totalamountdetails_detail'),
     path('totalamountdetails/<int:pk>/update/', views.TotalAmountDetailsUpdateView.as_view(), name='totalamountdetails_update'),
     path('totalamountdetails/<int:pk>/delete/', views.TotalAmountDetailsDeleteView.as_view(), name='totalamountdetails_delete'),
 
+    # PaymentDetails URLs
     path('payment/', views.PaymentDetailsListView.as_view(), name='paymentdetails_list'),
     path('payment/create/', views.PaymentDetailsCreateView.as_view(), name='paymentdetails_create'),
     path('payment/<int:pk>/', views.PaymentDetailsDetailView.as_view(), name='paymentdetails_detail'),
     path('payment/<int:pk>/update/', views.PaymentDetailsUpdateView.as_view(), name='paymentdetails_update'),
     path('payment/<int:pk>/delete/', views.PaymentDetailsDeleteView.as_view(), name='paymentdetails_delete'),
 
-
-
     path('add_payment_detail/', views.add_payment_detail, name='add_payment_detail'),
     path('add_total_amount_detail/', views.add_total_amount_detail, name='add_total_amount_detail'),
+
+    path('edit_payment_detail/<int:pk>/', views.edit_payment_detail, name='edit_payment_detail'),
+    path('delete_payment_detail/<int:pk>/', views.PaymentDetailsDeleteView.as_view(), name='delete_payment_detail'),
 ]

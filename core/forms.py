@@ -25,17 +25,6 @@ class ExpenseForm(forms.ModelForm):
         }
 
 
-# class IncomeForm(forms.ModelForm):
-#     class Meta:
-#         model = Income
-#         fields = '__all__'
-#         widgets = {
-#             'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-#             'value': forms.NumberInput(attrs={'class': 'form-control'}),
-#             'description': forms.Textarea(attrs={'class': 'form-control'}),
-#         }
-
-
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
@@ -59,15 +48,6 @@ class WorkRecordForm(forms.ModelForm):
             'hours': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
-
-# class TotalAmountDetailsForm(forms.ModelForm):
-#     class Meta:
-#         model = TotalAmountDetails
-#         fields = ['project', 'description_of_work', 'scheduled_value']
-#         widgets = {
-#             'project': forms.HiddenInput(),
-#         }
-#
 
 class TotalAmountDetailsForm(forms.ModelForm):
     class Meta:

@@ -1,31 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Payment Detail: {{ object.id }}</h2>
-    <table class="table table-bordered">
-        <tr>
-            <th>Project</th>
-            <td>{{ object.project.name }}</td>
-        </tr>
-        <tr>
-            <th>Description</th>
-            <td>{{ object.description }}</td>
-        </tr>
-        <tr>
-            <th>Completion Date</th>
-            <td>{{ object.completion_date }}</td>
-        </tr>
-        <tr>
-            <th>Amount</th>
-            <td>${{ object.amount|floatformat:"2" }}</td>
-        </tr>
-    </table>
-    <a href="{% url 'paymentdetails_list' %}" class="btn btn-primary">Back to List</a>
-    <a href="{% url 'paymentdetails_update' object.id %}" class="btn btn-warning">Edit</a>
-    <form action="{% url 'paymentdetails_delete' object.id %}" method="post" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Delete</button>
-    </form>
-</div>
+  <h2>Payment Detail</h2>
+  <p><strong>Date:</strong> {{ object.date }}</p>
+  <p><strong>Value:</strong> {{ object.value }}</p>
+  <p><strong>Description:</strong> {{ object.description }}</p>
+  <p><strong>Status:</strong> {{ object.status }}</p>
+  <a href="{% url 'edit_payment_detail' object.pk %}" class="btn btn-primary">Edit</a>
+  <a href="{% url 'delete_payment_detail' object.pk %}" class="btn btn-danger">Delete</a>
 {% endblock %}

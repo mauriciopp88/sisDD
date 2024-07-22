@@ -3,7 +3,6 @@ import locale
 
 register = template.Library()
 
-
 @register.filter(name='currency')
 def currency(value):
     try:
@@ -18,7 +17,6 @@ def currency(value):
 
     return locale.format_string("%0.2f", value, grouping=True)
 
-
 @register.filter(name='add_class')
 def add_class(value, arg):
     css_classes = value.field.widget.attrs.get('class', '')
@@ -29,9 +27,12 @@ def add_class(value, arg):
     value.field.widget.attrs['class'] = css_classes
     return value
 
-
 @register.filter(name='add_attr')
 def add_attr(value, arg):
     key, val = arg.split(":")
     value.field.widget.attrs[key] = val
     return value
+
+@register.filter(name='get_item')
+def get_item(dictionary, key):
+    return dictionary.get(key)
