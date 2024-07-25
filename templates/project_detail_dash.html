@@ -138,7 +138,8 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5 class="card-title">Employee Work Records</h5>
-                            <a href="{% url 'add_work_record' %}" class="btn btn-primary float-right ml-2">Add Work Record</a>
+                            {#                            <a href="{% url 'add_work_record' %}" class="btn btn-primary float-right ml-2">Add Work Record</a>#}
+                            <a href="{% url 'add_work_record' %}?project={{ project.id }}" class="btn btn-primary float-right ml-2">Add Work Record</a>
                         </div>
                         <div class="card-body">
                             <table id="employee-work-records-table" class="table table-bordered table-hover dataTable">
@@ -147,7 +148,7 @@
                                     <th>Employee</th>
                                     <th>Total Hours</th>
                                     <th>Total Labor Cost</th>
-{#                                    <th>Actions</th>#}
+                                    {#                                    <th>Actions</th>#}
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -156,13 +157,13 @@
                                         <td>{{ employee }}</td>
                                         <td>{{ totals.hours }}</td>
                                         <td>${{ totals.total_cost|floatformat:"2" }}</td>
-{#                                        <td>#}
-{#                                            <a href="{% url 'workrecord_update' totals.pk %}" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>#}
-{#                                            <form method="post" action="{% url 'workrecord_delete' totals.pk %}?next={% url 'project_detail_dash' project.id %}" style="display:inline;">#}
-{#                                                {% csrf_token %}#}
-{#                                                <button type="submit" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></button>#}
-{#                                            </form>#}
-{#                                        </td>#}
+                                        {#                                        <td>#}
+                                        {#                                            <a href="{% url 'workrecord_update' totals.pk %}" class="btn btn-xs btn-warning"><i class="fas fa-edit"></i></a>#}
+                                        {#                                            <form method="post" action="{% url 'workrecord_delete' totals.pk %}?next={% url 'project_detail_dash' project.id %}" style="display:inline;">#}
+                                        {#                                                {% csrf_token %}#}
+                                        {#                                                <button type="submit" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></button>#}
+                                        {#                                            </form>#}
+                                        {#                                        </td>#}
                                     </tr>
                                 {% endfor %}
                                 <tr>
@@ -191,7 +192,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="totalAmountDetailForm" method="post" action="{% url 'add_total_amount_detail' %}">
+                    <form id="totalAmountDetailForm" method="post" action="{% url 'add_total_amount_detail' %}?project={{ project.id }}">
                         {% csrf_token %}
                         <input type="hidden" name="project" value="{{ project.id }}">
                         {{ total_amount_detail_form.as_p }}
@@ -201,6 +202,8 @@
             </div>
         </div>
     </div>
+
+
 
     <!-- Modal para agregar Payment Details -->
     <div class="modal fade" id="addPaymentDetailModal" tabindex="-1" role="dialog" aria-labelledby="addPaymentDetailModalLabel" aria-hidden="true">

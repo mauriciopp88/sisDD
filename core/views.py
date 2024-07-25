@@ -415,17 +415,21 @@ def add_payment_detail(request):
         return JsonResponse({'status': 'error', 'errors': form.errors})
 
 
-@csrf_exempt
-@require_POST
 @login_required
 @permission_required('app.add_totalamountdetails', raise_exception=True)
 def add_total_amount_detail(request):
-    form = TotalAmountDetailsForm(request.POST)
-    if form.is_valid():
-        form.save()
-        return JsonResponse({'status': 'success'})
+    project_id = request.POST.get('project') or request.GET.get('project')
+    if request.method == 'POST':
+        form = TotalAmountDetailsForm(request.POST, project_id=project_id)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'errors': form.errors})
     else:
-        return JsonResponse({'status': 'error', 'errors': form.errors})
+        form = TotalAmountDetailsForm(initial={'project': project_id}, project_id=project_id)
+    return render(request, 'totalamountdetails_form.html', {'form': form})
+
 
 
 @login_required
@@ -488,12 +492,19 @@ class WorkRecordCreateView(CreateView):
     form_class = WorkRecordForm
     template_name = 'workrecord_form.html'
 
+    def get_initial(self):
+        initial = super().get_initial()
+        project_id = self.request.GET.get('project')
+        if project_id:
+            initial['project'] = project_id
+        return initial
+
     def form_valid(self, form):
         work_record = form.save(commit=False)
-        project_id = self.request.POST.get('project')  # Obtener el project_id del formulario
-        work_record.project_id = project_id  # Asignar el project_id al registro de trabajo
+        work_record.project_id = self.request.POST.get('project')  # Asigna el project_id al work_record
         work_record.save()
-        return redirect(reverse('project_detail_dash', kwargs={'project_id': project_id}))
+        return redirect(reverse('project_detail_dash', kwargs={'project_id': work_record.project_id}))
+
 
 
 class WorkRecordUpdateView(UpdateView):

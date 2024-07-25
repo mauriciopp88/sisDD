@@ -42,11 +42,20 @@ class EmployeeForm(forms.ModelForm):
 class WorkRecordForm(forms.ModelForm):
     class Meta:
         model = WorkRecord
-        fields = '__all__'
+        fields = ['employee', 'project', 'date', 'hours']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'hours': forms.NumberInput(attrs={'class': 'form-control'}),
+            'date': forms.DateInput(attrs={'type': 'date'})
         }
+
+    def __init__(self, *args, **kwargs):
+        project_id = kwargs.pop('initial', {}).get('project')
+        super(WorkRecordForm, self).__init__(*args, **kwargs)
+        if project_id:
+            self.fields['project'].initial = project_id
+
+
+from django import forms
+from .models import TotalAmountDetails, Project
 
 
 class TotalAmountDetailsForm(forms.ModelForm):
@@ -57,6 +66,12 @@ class TotalAmountDetailsForm(forms.ModelForm):
             'description_of_work': forms.TextInput(attrs={'class': 'form-control'}),
             'scheduled_value': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        project_id = kwargs.pop('project_id', None)
+        super(TotalAmountDetailsForm, self).__init__(*args, **kwargs)
+        if project_id:
+            self.fields['description_of_work'].queryset = TotalAmountDetails.objects.filter(project_id=project_id)
 
 
 class PaymentDetailsForm(forms.ModelForm):
