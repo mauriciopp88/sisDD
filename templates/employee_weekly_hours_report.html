@@ -21,7 +21,7 @@
                         <form method="get">
                             <input type="hidden" name="week" id="week-offset" value="{{ week_offset }}">
                             <div class="input-group input-group-sm">
-                                <input type="text" id="datepicker" class="form-control" placeholder="Select a date">
+                                <input type="text" id="datepicker" class="form-control" placeholder="Select a date" readonly>
                             </div>
                         </form>
                     </div>
@@ -29,20 +29,24 @@
                 <div class="card-body">
                     <table id="employee-hours-table" class="table table-bordered table-hover" title="TABLA">
                         <thead>
-                        <tr>
-                            <th>Employee</th>
-                            <th>Total Hours</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        {% for record in employee_hours %}
                             <tr>
-                                <td>{{ record.employee__full_name }}</td>
-                                <td>{{ record.total_hours }}</td>
-
+                                <th>Employee</th>
+                                <th>Total Hours</th>
                             </tr>
-                        {% endfor %}
+                        </thead>
+                        <tbody>
+                            {% if employee_hours %}
+                                {% for record in employee_hours %}
+                                    <tr>
+                                        <td>{{ record.employee__full_name }}</td>
+                                        <td>{{ record.total_hours }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="2">No work records found for the selected week.</td>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
@@ -50,67 +54,70 @@
         </div>
     </section>
 
-    {% block scripts %}
-        <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-        <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-        <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
-        <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
-        <script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
-        <script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
-        <script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
-        <script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
-        <script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
-        <script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
-        <script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
-        <script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
-        <script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
-        <script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
-        <!-- jQuery UI -->
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+{% block scripts %}
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+    <script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+    <script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+    <!-- jQuery UI -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
-        <script>
-            $(document).ready(function() {
-                if (!$.fn.DataTable.isDataTable('#employee-hours-table')) {
-                    $('#employee-hours-table').DataTable({
-                        "responsive": true,
-                        "lengthChange": false,
-                        "autoWidth": false,
-                        "buttons": [
-                            {
-                                extend: 'excel',
-                                title: function (){
-                                    return 'D and D Mechanical Fire LLC. - Weekly Hour Report';
-                                }
-                            },
-                            {
-                                extend: 'pdf',
-                                title: function (){
-                                    return 'D and D Mechanical Fire LLC. - Weekly Hour Report';
-                                }                    },
-                            {
-                                extend: 'print',
-                                title: function (){
-                                    return {{ start_date }} {{ end_date }};
-                                }                    },
-                        ]
-                    }).buttons().container().appendTo('#employee-hours-table_wrapper .col-md-6:eq(0)');
+    <script>
+        $(document).ready(function() {
+            if (!$.fn.DataTable.isDataTable('#employee-hours-table')) {
+                $('#employee-hours-table').DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "buttons": [
+                        {
+                            extend: 'excel',
+                            title: function (){
+                                return 'D and D Mechanical Fire LLC. - Weekly Hour Report';
+                            }
+                        },
+                        {
+                            extend: 'pdf',
+                            title: function (){
+                                return 'D and D Mechanical Fire LLC. - Weekly Hour Report';
+                            }                    
+                        },
+                        {
+                            extend: 'print',
+                            title: function (){
+                                return '{{ start_date }} to {{ end_date }}';
+                            }                    
+                        },
+                    ]
+                }).buttons().container().appendTo('#employee-hours-table_wrapper .col-md-6:eq(0)');
+            }
+
+            // Initialize Datepicker
+            $('#datepicker').datepicker({
+                dateFormat: 'yy-mm-dd', // Formato de fecha para el datepicker
+                onSelect: function(dateText, inst) {
+                    var date = $(this).datepicker('getDate');
+                    var startOfWeek = new Date(date.setDate(date.getDate() - date.getDay()));
+                    var endOfWeek = new Date(date.setDate(date.getDate() + 6));
+                    var startDate = $.datepicker.formatDate('yy-mm-dd', startOfWeek);
+                    var endDate = $.datepicker.formatDate('yy-mm-dd', endOfWeek);
+
+                    // Update the hidden input value and submit the form
+                    $('#week-offset').val(startDate + '|' + endDate);
+                    $(this).closest('form').submit();
                 }
-
-                // Initialize Datepicker
-                $('#datepicker').datepicker({
-                    onSelect: function(dateText, inst) {
-                        var date = $(this).datepicker('getDate');
-                        var startOfWeek = new Date(date.setDate(date.getDate() - date.getDay()));
-                        var endOfWeek = new Date(date.setDate(date.getDate() + 6));
-                        var startDate = $.datepicker.formatDate('yy-mm-dd', startOfWeek);
-                        var endDate = $.datepicker.formatDate('yy-mm-dd', endOfWeek);
-
-                        // Update the hidden input value and submit the form
-                        $('#week-offset').val(startDate + '|' + endDate);
-                        $(this).closest('form').submit();
-                    }
-                });
             });
-        </script>
-    {% endblock %}
+        });
+    </script>
+{% endblock %}
 {% endblock %}

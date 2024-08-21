@@ -257,6 +257,13 @@ class WorkRecordListView(ListView):
     template_name = 'workrecord_list.html'
     context_object_name = 'workrecords'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['projects'] = Project.objects.all()
+        context['employees'] = Employee.objects.all()
+        return context
+
+
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(permission_required('app.add_workrecord', raise_exception=True), name='dispatch')
@@ -370,28 +377,27 @@ class PaymentDetailsDeleteView(DeleteView):
 def employee_weekly_hours_report(request):
     start_date, end_date = get_previous_week_range()
 
-    if request.GET.get('week'):
+    week_param = request.GET.get('week')
+    if week_param:
         try:
-            start_date_str, end_date_str = request.GET.get('week').split('|')
+            start_date_str, end_date_str = week_param.split('|')
             start_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d').date()
             end_date = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
         except ValueError:
-            week_offset = int(request.GET.get('week'))
-            start_date += datetime.timedelta(weeks=week_offset)
-            end_date += datetime.timedelta(weeks=week_offset)
+            pass  # Si falla el split, se mantiene el rango de la semana anterior
 
     work_records = WorkRecord.objects.filter(date__range=[start_date, end_date])
-    employee_hours = work_records.values('employee__full_name').annotate(total_hours=Sum('hours')).order_by(
-        'employee__full_name')
+    employee_hours = work_records.values('employee__full_name').annotate(total_hours=Sum('hours')).order_by('employee__full_name')
 
     context = {
         'start_date': start_date,
         'end_date': end_date,
         'employee_hours': employee_hours,
-        'week_offset': request.GET.get('week', 0)
+        'week_offset': week_param or 0,
     }
 
     return render(request, 'employee_weekly_hours_report.html', context)
+
 
 
 @method_decorator(login_required, name='dispatch')

@@ -17,7 +17,7 @@
             <div class="card-header">
                 <h3 class="card-title">Work Records</h3>
                 <div class="card-tools">
-                    <a href="{% url 'workrecord_create' %}" class="btn btn-primary btn-sm">
+                <a href="{% url 'add_work_record' %}" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus"></i> Add Work Record
                     </a>
                 </div>
@@ -75,7 +75,7 @@
                         <tr>
                             <td>{{ workrecord.employee }}</td>
                             <td>{{ workrecord.project }}</td>
-                            <td>{{ workrecord.date|date:"F j, Y" }}</td>
+                            <td data-order="{{ workrecord.date }}">{{ workrecord.date|date:"M-j-Y" }}</td>
                             <td>{{ workrecord.hours }}</td>
                             <td>
                                 <a href="{% url 'workrecord_update' workrecord.pk %}" class="btn btn-xs btn-warning" title="Edit">
@@ -102,53 +102,50 @@
 <script src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/datetime-moment.js"></script>
 <script>
     $(document).ready(function() {
-        console.log("Document is ready");
-
-
-        $.fn.dataTable.moment('MMMM D, YYYY');
-
-        var table = $('#workrecord-table').DataTable({
-            "paging": true,
-            "ordering": true,
-            "searching": true,
-            "columnDefs": [
-                { "type": "datetime-moment", "targets": 3 }
-            ],
-        });
-
-        $('#filter-button').on('click', function() {
-            console.log("Filter button clicked");
-            var projectId = $('#project').val();
-            var employeeId = $('#employee').val();
-            var startDate = $('#start-date').val();
-            var endDate = $('#end-date').val();
-
-            table.columns().search('');
-
-            if (projectId) {
-                table.column(1).search(projectId).draw();
-            }
-
-            if (employeeId) {
-                table.column(0).search(employeeId).draw();
-            }
-
-            if (startDate && endDate) {
-                table.column(2).search(function (value, index, array) {
-                    var date = new Date(value);
-                    var start = new Date(startDate);
-                    var end = new Date(endDate);
-                    return start <= date && date <= end.setDate(end.getDate() + 1);
-                }).draw();
-            }
-        });
-
-        $('#reset-button').on('click', function() {
-            console.log("Reset button clicked");
-            $('#filter-form')[0].reset();
-            table.columns().search('').draw();
-        });
+    var table = $('#workrecord-table').DataTable({
+        "paging": true,
+        "ordering": true,
+        "searching": true,
+        "order": [[2, 'desc']], // Ordena por la columna de fecha, que es la tercera (índice 2).
+        "columnDefs": [
+            { "targets": 2, "type": "date" } // Asegúrate de que esta columna se reconozca como fecha
+        ],
     });
+
+    // Configuración de los filtros
+    $('#filter-button').on('click', function() {
+        var projectId = $('#project').val();
+        var employeeId = $('#employee').val();
+        var startDate = $('#start-date').val();
+        var endDate = $('#end-date').val();
+
+        table.columns().search('');
+
+        if (projectId) {
+            table.column(1).search(projectId).draw();
+        }
+
+        if (employeeId) {
+            table.column(0).search(employeeId).draw();
+        }
+
+        if (startDate && endDate) {
+            table.column(2).search(function (value, index, array) {
+                var date = new Date(value);
+                var start = new Date(startDate);
+                var end = new Date(endDate);
+                return start <= date && date <= end.setDate(end.getDate() + 1);
+            }).draw();
+        }
+    });
+
+    $('#reset-button').on('click', function() {
+        $('#filter-form')[0].reset();
+        table.columns().search('').draw();
+    });
+});
+
+
 </script>
 {% endblock %}
 {% endblock %}
